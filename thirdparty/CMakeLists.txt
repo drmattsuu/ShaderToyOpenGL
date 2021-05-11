@@ -48,11 +48,11 @@ add_subdirectory(boost-cmake)
 ## ImGui ##
 
 add_library(imgui
-	imgui/imgui.cpp
-	imgui/imgui_demo.cpp
-	imgui/imgui_draw.cpp
-	imgui/imgui_tables.cpp
-	imgui/imgui_widgets.cpp
+    imgui/imgui.cpp
+    imgui/imgui_demo.cpp
+    imgui/imgui_draw.cpp
+    imgui/imgui_tables.cpp
+    imgui/imgui_widgets.cpp
 )
 
 target_include_directories(imgui
