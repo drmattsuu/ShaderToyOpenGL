@@ -1,16 +1,15 @@
 [submodule "thirdparty/boost-cmake"]
-    path = thirdparty/boost-cmake
-    url = https://github.com/Orphis/boost-cmake.git
+	path = thirdparty/boost-cmake
+	url = https://github.com/Orphis/boost-cmake.git
     branch = v1.67.0
 [submodule "thirdparty/cmake-modules"]
-    path = thirdparty/cmake-modules
-    url = https://github.com/rpavlik/cmake-modules.git
+	path = thirdparty/cmake-modules
+	url = https://github.com/rpavlik/cmake-modules.git
     branch = 38131f4c7b0914b450c5d03396954629eb13c537
 [submodule "thirdparty/glm"]
-    path = thirdparty/glm
-    url = https://github.com/g-truc/glm.git
+	path = thirdparty/glm
+	url = https://github.com/g-truc/glm.git
     branch = d162eee1e6f7c317a09229fe6ceab8ec6ab9a4b4
 [submodule "thirdparty/imgui"]
-    path = thirdparty/imgui
-    url = https://github.com/ocornut/imgui.git
-    branch = v1.82
+	path = thirdparty/imgui
+	url = https://github.com/ocornut/imgui.git
