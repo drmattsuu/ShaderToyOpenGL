@@ -1,7 +1,7 @@
 [submodule "thirdparty/boost-cmake"]
 	path = thirdparty/boost-cmake
 	url = https://github.com/Orphis/boost-cmake.git
-    branch = v1.67.0
+    branch = boost170
 [submodule "thirdparty/cmake-modules"]
 	path = thirdparty/cmake-modules
 	url = https://github.com/rpavlik/cmake-modules.git

@@ -1,0 +1,127 @@
+﻿{
+"configurations": [
+{
+"name": "x64-Debug",
+"generator": "Ninja",
+"configurationType": "Debug",
+"inheritEnvironments": [ "msvc_x64_x64" ],
+"buildRoot": "${workspaceRoot}\\build\\${configurationType}\\${name}",
+"installRoot": "${workspaceRoot}\\build\\${configurationType}\\install\\${name}",
+"variables": [
+{
+"name": "GLFW_BUILD_DOCS",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "BOOST_DISABLE_TESTS",
+"value": "True",
+"type": "BOOL"
+},
+{
+"name": "GLFW_BUILD_EXAMPLES",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLFW_BUILD_TESTS",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLFW_INSTALL",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLM_TEST_ENABLE",
+"value": "False",
+"type": "BOOL"
+}
+]
+},
+{
+"name": "x64-Release",
+"generator": "Ninja",
+"configurationType": "Release",
+"inheritEnvironments": [ "msvc_x64_x64" ],
+"buildRoot": "${workspaceRoot}\\build\\${configurationType}\\${name}",
+"installRoot": "${workspaceRoot}\\build\\${configurationType}\\install\\${name}",
+"variables": [
+{
+"name": "GLFW_BUILD_DOCS",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "BOOST_DISABLE_TESTS",
+"value": "True",
+"type": "BOOL"
+},
+{
+"name": "GLFW_BUILD_EXAMPLES",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLFW_BUILD_TESTS",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLFW_INSTALL",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLM_TEST_ENABLE",
+"value": "False",
+"type": "BOOL"
+}
+]
+},
+{
+"name": "x64-RelWithDebugInfo",
+"generator": "Ninja",
+"configurationType": "RelWithDebInfo",
+"buildRoot": "${workspaceRoot}\\build\\${configurationType}\\${name}",
+"installRoot": "${projectDir}\\out\\install\\${name}",
+"cmakeCommandArgs": "",
+"buildCommandArgs": "-v",
+"ctestCommandArgs": "",
+"inheritEnvironments": [ "msvc_x86_x64" ],
+"variables": [
+{
+"name": "GLFW_BUILD_DOCS",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "BOOST_DISABLE_TESTS",
+"value": "True",
+"type": "BOOL"
+},
+{
+"name": "GLFW_BUILD_EXAMPLES",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLFW_BUILD_TESTS",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLFW_INSTALL",
+"value": "False",
+"type": "BOOL"
+},
+{
+"name": "GLM_TEST_ENABLE",
+"value": "False",
+"type": "BOOL"
+}
+]
+}
+]
+}
