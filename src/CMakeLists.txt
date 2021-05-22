@@ -2,7 +2,11 @@ set (_src_root_path "${CMAKE_SOURCE_DIR}/src")
 
 add_executable(GLShaderToy
     "main.cpp"
-    "Drawing/GLRenderWindow.cpp")
+    "Drawing/GLRenderWindow.cpp"
+    "Drawing/GLRenderable.cpp"
+    "Drawing/ImguiImpl.cpp"
+    "Util/FileUtils.cpp"
+    "Util/ShaderUtils.cpp")
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem
@@ -12,6 +16,7 @@ target_link_libraries(GLShaderToy
 
 target_include_directories(GLShaderToy
     PRIVATE
+        ${_src_root_path}
     SYSTEM PUBLIC
         ${CMAKE_SOURCE_DIR}/thirdparty/glfw/include
         ${CMAKE_SOURCE_DIR}/thirdparty/glew-2.1.0/include
