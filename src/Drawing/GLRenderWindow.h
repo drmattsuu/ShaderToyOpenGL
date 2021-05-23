@@ -28,6 +28,7 @@ private:
     bool m_contextCreated = false;
     GLFWwindow* m_window = nullptr;
     int m_displaySize[2] = {1280, 720};
+    GLclampf m_clearColor[4] = {0.45f, 0.55f, 0.60f, 1.00f};
 
     std::list<GLRenderablePtr> m_renderables;
 };

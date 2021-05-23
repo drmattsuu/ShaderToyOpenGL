@@ -90,11 +90,12 @@ void GLRenderWindow::NewFrame()
 
     ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Appearing);
     if (ImGui::Begin("##DebugInfoWindow", nullptr,
-                     ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar))
+                     ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
     {
         float frameMs = 0.001f * ImGui::GetIO().Framerate;
         ImGui::Text("%.3f ms/frame (%.1f FPS)", frameMs, ImGui::GetIO().Framerate);
         ImGui::Checkbox("Show ImGui Demo", &g_ShowDemoWindow);
+        ImGui::ColorEdit4("Clear Color", m_clearColor);
     }
     ImGui::End();  // always call end
 
@@ -112,13 +113,14 @@ void GLRenderWindow::Render()
     ImGui::Render();
     glfwGetFramebufferSize(m_window, &m_displaySize[0], &m_displaySize[1]);
     glViewport(0, 0, m_displaySize[0], m_displaySize[1]);
-    glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+    glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Call Render functions
     for (auto renderable : m_renderables)
     {
-        renderable->Render();
+        if (renderable->ShouldRender())
+            renderable->Render();
     }
 
     GLGui::RenderDrawData(ImGui::GetDrawData());

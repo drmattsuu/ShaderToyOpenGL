@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
 
 #include <string>
 
@@ -30,6 +31,7 @@ void GLHelloTriangle::Init()
     glGenBuffers(1, &m_vertexBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
     glBufferData(GL_ARRAY_BUFFER, sizeof(s_bufData), s_bufData, GL_STATIC_DRAW);
+    m_colorUniformLocation = glGetUniformLocation(m_shaderProgramId, "i_color");
 }
 
 void GLHelloTriangle::CleanGLResources()
@@ -52,6 +54,17 @@ void GLHelloTriangle::NewFrame()
     {
         Init();
     }
+
+    if (ImGui::Begin("Triangle Layer", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Checkbox("Enable Layer", &m_renderEnabled);
+        bool headerExpanded = ImGui::CollapsingHeader("Triangle Color");
+        ImGui::SameLine();
+        ImGui::ColorButton("TriangleColor", ImVec4(m_color[0], m_color[1], m_color[2], m_color[3]));
+        if (headerExpanded)
+            ImGui::ColorPicker4("Triangle Color", m_color);
+    }
+    ImGui::End();
 }
 
 void GLHelloTriangle::Render()
@@ -63,6 +76,8 @@ void GLHelloTriangle::Render()
     // glBufferData(GL_ARRAY_BUFFER, sizeof(s_bufData), s_bufData, GL_STATIC_DRAW);
 
     glUseProgram(m_shaderProgramId);
+
+    glUniform4fv(m_colorUniformLocation, 1, m_color);
 
     glEnableVertexAttribArray(0);
 
