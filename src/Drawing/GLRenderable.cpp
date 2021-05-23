@@ -26,12 +26,12 @@ void GLHelloTriangle::Init()
     glGenVertexArrays(1, &m_vertexArrayId);
     glBindVertexArray(m_vertexArrayId);
 
-    m_shaderProgramId = LoadShader("resources/triangle.vert", "resources/triangle.frag");
+    m_shaderId = LoadShader("resources/triangle.vert", "resources/triangle.frag");
 
     glGenBuffers(1, &m_vertexBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
     glBufferData(GL_ARRAY_BUFFER, sizeof(s_bufData), s_bufData, GL_STATIC_DRAW);
-    m_colorUniformLocation = glGetUniformLocation(m_shaderProgramId, "i_color");
+    m_colorUniformLocation = glGetUniformLocation(m_shaderId, "u_color");
 }
 
 void GLHelloTriangle::CleanGLResources()
@@ -40,29 +40,24 @@ void GLHelloTriangle::CleanGLResources()
         glDeleteBuffers(1, &m_vertexBufferId);
     if (m_vertexArrayId)
         glDeleteVertexArrays(1, &m_vertexArrayId);
-    if (m_shaderProgramId)
-        glDeleteProgram(m_shaderProgramId);
+    if (m_shaderId)
+        glDeleteProgram(m_shaderId);
 
     m_vertexBufferId = 0;
     m_vertexArrayId = 0;
-    m_shaderProgramId = 0;
+    m_shaderId = 0;
 }
 
 void GLHelloTriangle::NewFrame()
 {
-    if (!m_vertexArrayId || !m_vertexBufferId || !m_shaderProgramId)
+    if (!m_shaderId)
     {
         Init();
     }
 
-    if (ImGui::Begin("Triangle Layer", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::Begin(m_name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Checkbox("Enable Layer", &m_renderEnabled);
-        bool headerExpanded = ImGui::CollapsingHeader("Triangle Color");
-        ImGui::SameLine();
-        ImGui::ColorButton("TriangleColor", ImVec4(m_color[0], m_color[1], m_color[2], m_color[3]));
-        if (headerExpanded)
-            ImGui::ColorPicker4("Triangle Color", m_color);
+        ImGui::ColorPicker4("Triangle Color", m_color);
     }
     ImGui::End();
 }
@@ -70,18 +65,15 @@ void GLHelloTriangle::NewFrame()
 void GLHelloTriangle::Render()
 {
     glBindVertexArray(m_vertexArrayId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-    // Normally we may need to re-populate our buffer-data here, but we can skip that step because the buffer-data is
-    // constant and unchanging.
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(s_bufData), s_bufData, GL_STATIC_DRAW);
 
-    glUseProgram(m_shaderProgramId);
+    glUseProgram(m_shaderId);
 
     glUniform4fv(m_colorUniformLocation, 1, m_color);
 
     glEnableVertexAttribArray(0);
-
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glDisableVertexAttribArray(0);

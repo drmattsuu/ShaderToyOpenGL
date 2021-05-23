@@ -24,6 +24,8 @@ public:
     void AddRenderable(GLRenderablePtr renderable);
     void RemoveRenderable(GLRenderablePtr renderable);
 
+    GLFWwindow* GetWindow() { return m_window; }
+
 private:
     bool m_contextCreated = false;
     GLFWwindow* m_window = nullptr;

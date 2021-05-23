@@ -4,6 +4,7 @@ add_executable(GLShaderToy
     "main.cpp"
     "Drawing/GLRenderWindow.cpp"
     "Drawing/GLRenderable.cpp"
+    "Drawing/GLCubeRenderable.cpp"
     "Drawing/ImguiImpl.cpp"
     "Util/FileUtils.cpp"
     "Util/ShaderUtils.cpp")

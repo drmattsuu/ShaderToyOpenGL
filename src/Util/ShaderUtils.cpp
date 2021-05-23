@@ -81,3 +81,52 @@ GLint LinkShader(GLuint programId, GLuint vertShaderId, GLuint fragShaderId)
 
     return result;
 }
+
+GLuint LoadTextureBMPFile(const std::string& bmpPath)
+{
+    std::vector<char> file = LoadFileBin(bmpPath);
+
+    if (file.size() < 54 || file[0] != 'B' && file[1] != 'M')
+    {
+        std::cout << "BMP file invalid: " + bmpPath << std::endl;
+        return 0;
+    }
+
+    if ((*(int*)&(file[0x1E]) != 0) && (*(int*)&(file[0x1C]) != 24))
+    {
+        std::cout << "BMP file: " + bmpPath << " is not in the 24bpp format." << std::endl;
+        return 0;
+    }
+
+    // Read the information about the image
+    unsigned dataPos = *(int*)&(file[0x0A]);
+    unsigned imageSize = *(int*)&(file[0x22]);
+    unsigned width = *(int*)&(file[0x12]);
+    unsigned height = *(int*)&(file[0x16]);
+
+    // Some BMP files are misformatted, guess missing information
+    if (imageSize == 0)
+        imageSize = width * height * 3;  // 3 : one byte for each Red, Green and Blue component
+    if (dataPos == 0)
+        dataPos = 54;  // width of the BMP header
+
+    GLuint prevTextureBinding2D;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*)&prevTextureBinding2D);
+
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    // Give the image to OpenGL todo : dataPos may be off by one, double check this
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, &file[dataPos]);
+    // Filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // MipMaps
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, prevTextureBinding2D);
+    return textureId;
+}

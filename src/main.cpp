@@ -1,5 +1,6 @@
 #include "Drawing/GLRenderWindow.h"
 #include "Drawing/GLRenderable.h"
+#include "Drawing/GLCubeRenderable.h"
 
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -19,6 +20,9 @@ int main()
     {
         GLRenderablePtr helloTriangle(new GLHelloTriangle());
         glRenderWindow.AddRenderable(helloTriangle);
+
+        GLRenderablePtr cube(new GLCubeRenderable(glRenderWindow.GetWindow()));
+        glRenderWindow.AddRenderable(cube);
 
         while (!glRenderWindow.GetShouldClose())
         {
