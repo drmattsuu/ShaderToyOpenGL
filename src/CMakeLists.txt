@@ -2,12 +2,16 @@ set (_src_root_path "${CMAKE_SOURCE_DIR}/src")
 
 add_executable(GLShaderToy
     "main.cpp"
-    "Drawing/GLRenderWindow.cpp"
-    "Drawing/GLRenderable.cpp"
+    "Drawing/GLCamera.cpp"
     "Drawing/GLCubeRenderable.cpp"
+    "Drawing/GLInput.cpp"
+    "Drawing/GLRenderable.cpp"
+    "Drawing/GLRenderWindow.cpp"
     "Drawing/ImguiImpl.cpp"
     "Util/FileUtils.cpp"
-    "Util/ShaderUtils.cpp")
+    "Util/lodepng.cpp"
+    "Util/ShaderUtils.cpp"
+    )
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem

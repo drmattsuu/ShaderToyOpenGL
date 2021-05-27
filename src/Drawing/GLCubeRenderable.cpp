@@ -5,17 +5,18 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-
+#include <imgui.h>
 #include <glm/ext.hpp>
 #include <glm/ext/matrix_transform.hpp>
+
+#include <vector>
 
 namespace
 {
 // clang-format off
 // Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-static const GLfloat g_vBufData[] = { 
+static const std::vector<GLfloat> g_vBufData = { 
     -1.0f,-1.0f,-1.0f,
     -1.0f,-1.0f, 1.0f,
     -1.0f, 1.0f, 1.0f,
@@ -54,8 +55,8 @@ static const GLfloat g_vBufData[] = {
      1.0f,-1.0f, 1.0f
 };
 
-// Two UV coordinates for each vertex. They were created with Blender.
-static const GLfloat g_uvBufData[] = { 
+ //Two UV coordinates for each vertex. Generated from blender for the bmp, won't look right with a png
+static const std::vector<GLfloat> g_uvBufData = { 
     0.000059f, 1.0f-0.000004f, 
     0.000103f, 1.0f-0.336048f, 
     0.335973f, 1.0f-0.335903f, 
@@ -93,14 +94,11 @@ static const GLfloat g_uvBufData[] = {
     1.000004f, 1.0f-0.671847f, 
     0.667979f, 1.0f-0.335851f
 };
+
 // clang-format on
 }  // namespace
 
-GLCubeRenderable::GLCubeRenderable(GLFWwindow* window)
-    : GLRenderable("Cube"),
-      m_view(glm::lookAt(glm::vec3(4.f, 3.f, 3.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0))),
-      m_model(1.f),
-      m_window(window)
+GLCubeRenderable::GLCubeRenderable(const GLCamera& camera) : GLRenderable("Cube"), m_camera(camera), m_model(1.f)
 {
 }
 
@@ -115,12 +113,37 @@ void GLCubeRenderable::Init()
 
     glGenBuffers(1, &m_vertexBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vBufData), g_vBufData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, g_vBufData.size() * sizeof(GLfloat), &g_vBufData[0], GL_STATIC_DRAW);
     glGenBuffers(1, &m_uvBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_uvBufferId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_uvBufData), g_uvBufData, GL_STATIC_DRAW);
-
-    m_textureId = LoadTextureBMPFile("resources/cube.bmp");
+    // if using png comment this line and invert the UV buffer
+    static const bool loadBMP = true;
+    if (loadBMP)
+    {
+        glBufferData(GL_ARRAY_BUFFER, g_uvBufData.size() * sizeof(GLfloat), &g_uvBufData[0], GL_STATIC_DRAW);
+        m_textureId = LoadTextureBMPFile("resources/cube2.bmp");
+    }
+    else
+    {
+        // Invert the UV buffer for PNG (only required because bmp is loaded upside down with my brain dead simple bmp
+        // loader and directly using the same UV buffer results in "backwards" looking textures in PNG).
+        // todo : finish this work by translating UV mappings 90 degrees to line up with BMP UV
+        std::vector<GLfloat> uvBufDataInverted(g_uvBufData.size());
+        auto it = uvBufDataInverted.begin();
+        auto origIt = g_uvBufData.begin();
+        for (; it != uvBufDataInverted.end(); ++it, ++origIt)
+        {
+            GLfloat& u = (*it);
+            GLfloat& v = (*++it);
+            const GLfloat& oldU = (*origIt);
+            const GLfloat& oldV = (*++origIt);
+            u = oldV;
+            v = oldU;
+        }
+        glBufferData(GL_ARRAY_BUFFER, uvBufDataInverted.size() * sizeof(GLfloat), &uvBufDataInverted[0],
+                     GL_STATIC_DRAW);
+        m_textureId = LoadTexturePNGFile("resources/cube.png");
+    }
 }
 
 void GLCubeRenderable::CleanGLResources()
@@ -143,25 +166,52 @@ void GLCubeRenderable::CleanGLResources()
     m_textureId = 0;
 }
 
-void GLCubeRenderable::NewFrame()
+void GLCubeRenderable::NewFrame(float deltaT)
 {
     if (!m_shaderId)
     {
         Init();
     }
 
-    // todo : only update when the aspect needs updating / listen for resize events
-    int displayW, displayH;
-    glfwGetFramebufferSize(m_window, &displayW, &displayH);
+    ImGui::SetNextWindowPos(ImVec2(300.f, 10.f), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin(m_name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::SliderFloat3("RPS", &m_rotSpeed[0], -1.f, 1.f, "%.2f");
+        if (ImGui::Button("Reload Shader"))
+        {
+            if (m_shaderId)
+                glDeleteProgram(m_shaderId);
 
-    m_aspect = static_cast<float>(displayW) / static_cast<float>(displayH);
+            m_shaderId = LoadShader("resources/cube.vert", "resources/cube.frag");
+
+            m_matrixUniformLocation = glGetUniformLocation(m_shaderId, "u_mvp");
+            m_textureSamplerLocation = glGetUniformLocation(m_shaderId, "u_texSampler");
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Reset Rotation"))
+        {
+            // reset to identity matrix
+            m_model = glm::mat4(1.f);
+            m_rotSpeed = glm::vec3(0.f);
+        }
+        if (ImGui::CollapsingHeader("Texture"))
+            ImGui::Image((ImTextureID)(intptr_t)(m_textureId), ImVec2(256.f, 256.f));
+    }
+    ImGui::End();
+    if (m_rotSpeed != glm::vec3(0.f))
+    {
+        float spd = glm::length(m_rotSpeed);
+        m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f * spd)), m_rotSpeed);
+    }
+    // m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f) * m_rotSpeed.x), glm::vec3(1.f, 0.0f, 0.0f));
+    // m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f) * m_rotSpeed.y), glm::vec3(0.0f, 1.f, 0.0f));
+    // m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f) * m_rotSpeed.z), glm::vec3(0.0f, 0.0f, 1.f));
 }
 
 void GLCubeRenderable::Render()
 {
-    glm::mat4 projection = glm::perspective(glm::radians(m_fovDeg), m_aspect, 0.1f, 1000.f);
     // Model View Projection
-    glm::mat4 mvp = projection * m_view * m_model;
+    glm::mat4 mvp = m_camera.GetProjectionMatrix() * m_camera.GetViewMatrix() * m_model;
 
     // Enable depth test
     bool prevEnableDepthTest = glIsEnabled(GL_DEPTH_TEST);

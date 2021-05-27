@@ -13,14 +13,6 @@ GLuint GLRenderable::LoadShader(const std::string& vertPath, const std::string& 
     return LoadShaderFile(vertPath, fragPath);
 }
 
-// clang-format off
-const GLfloat GLHelloTriangle::s_bufData[] = {
-    -1.0f, -1.0f, 0.0f,
-     1.0f, -1.0f, 0.0f,
-     0.0f,  1.0f, 0.0f,
-};
-// clang-format on
-
 void GLHelloTriangle::Init()
 {
     glGenVertexArrays(1, &m_vertexArrayId);
@@ -29,8 +21,8 @@ void GLHelloTriangle::Init()
     m_shaderId = LoadShader("resources/triangle.vert", "resources/triangle.frag");
 
     glGenBuffers(1, &m_vertexBufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(s_bufData), s_bufData, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_STATIC_DRAW);
     m_colorUniformLocation = glGetUniformLocation(m_shaderId, "u_color");
 }
 
@@ -48,16 +40,29 @@ void GLHelloTriangle::CleanGLResources()
     m_shaderId = 0;
 }
 
-void GLHelloTriangle::NewFrame()
+void GLHelloTriangle::NewFrame(float deltaT)
 {
     if (!m_shaderId)
     {
         Init();
     }
-
+    
+    ImGui::SetNextWindowPos(ImVec2(300.f, 10.f), ImGuiCond_FirstUseEver);
     if (ImGui::Begin(m_name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::ColorPicker4("Triangle Color", m_color);
+        if (ImGui::CollapsingHeader("Triangle Vertex Buffer"))
+        {
+            ImGui::InputFloat3("0", &m_bufData[0]);
+            ImGui::InputFloat3("1", &m_bufData[3]);
+            ImGui::InputFloat3("2", &m_bufData[6]);
+        }
+        bool expanded = ImGui::CollapsingHeader("Triangle Color");
+        ImGui::SameLine();
+        ImGui::ColorButton("TriangleColorButton", ImVec4(m_color[0], m_color[1], m_color[2], m_color[3]));
+        if (expanded)
+        {
+            ImGui::ColorPicker4("Triangle Color", m_color);
+        }
     }
     ImGui::End();
 }
@@ -72,6 +77,7 @@ void GLHelloTriangle::Render()
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);

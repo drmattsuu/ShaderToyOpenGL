@@ -1,11 +1,12 @@
 #pragma once
 
+#include "GLCamera.h"
 #include "GLRenderable.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <list>
+#include <vector>
 
 class GLRenderWindow
 {
@@ -26,11 +27,18 @@ public:
 
     GLFWwindow* GetWindow() { return m_window; }
 
+    const GLCamera& GetCamera() const { return m_camera; }
+
 private:
     bool m_contextCreated = false;
-    GLFWwindow* m_window = nullptr;
     int m_displaySize[2] = {1280, 720};
+    int m_prevDisplaySize[2] = {1280, 720};
+    int m_activeDemo = 0;
+
+    GLFWwindow* m_window = nullptr;
     GLclampf m_clearColor[4] = {0.45f, 0.55f, 0.60f, 1.00f};
 
-    std::list<GLRenderablePtr> m_renderables;
+    std::vector<GLRenderablePtr> m_renderables;
+
+    GLCamera m_camera;
 };

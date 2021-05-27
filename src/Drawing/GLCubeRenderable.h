@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GLCamera.h"
 #include "GLRenderable.h"
 
 #include <GL/glew.h>
@@ -9,13 +10,13 @@
 class GLCubeRenderable : public GLRenderable
 {
 public:
-    GLCubeRenderable(GLFWwindow* window);
+    GLCubeRenderable(const GLCamera& camera);
     ~GLCubeRenderable() { CleanGLResources(); }
 
     void Init() override;
     void CleanGLResources() override;
 
-    void NewFrame() override;
+    void NewFrame(float deltaT) override;
     void Render() override;
 
 private:
@@ -27,11 +28,10 @@ private:
 
     GLint m_matrixUniformLocation = -1;
     GLint m_textureSamplerLocation = -1;
-    
-    float m_fovDeg = 45.f;
-    float m_aspect = 1.33f;
-    glm::mat4 m_view;
+
     glm::mat4 m_model;
 
-    GLFWwindow* m_window;
+    glm::vec3 m_rotSpeed{0.f};
+
+    const GLCamera& m_camera;
 };

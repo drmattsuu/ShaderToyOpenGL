@@ -8,8 +8,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
+#include <vector>
 
 static bool g_ShowDemoWindow = false;
 
@@ -65,6 +67,12 @@ bool GLRenderWindow::GLInit()
     {
         renderable->Init();
     }
+
+    m_camera.SetPosition(glm::vec3(4.f, 3.f, 3.f));
+    m_camera.LookAt(glm::vec3(0, 0, 0));
+    float aspect = static_cast<float>(m_displaySize[0]) / static_cast<float>(m_displaySize[1]);
+    m_camera.SetAspect(aspect);
+
     m_contextCreated = true;
     return true;
 }
@@ -88,26 +96,101 @@ void GLRenderWindow::NewFrame()
     GLGui::NewFrame();
     ImGui::NewFrame();
 
+    ImGuiIO& io = ImGui::GetIO();
     ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Appearing);
+    float frameMs = io.DeltaTime * 1000.f;
+
     if (ImGui::Begin("##DebugInfoWindow", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
     {
-        float frameMs = 0.001f * ImGui::GetIO().Framerate;
-        ImGui::Text("%.3f ms/frame (%.1f FPS)", frameMs, ImGui::GetIO().Framerate);
+        ImGui::Text("%.3f ms/frame (%.1f FPS)", frameMs, io.Framerate);
         ImGui::Checkbox("Show ImGui Demo", &g_ShowDemoWindow);
         ImGui::ColorEdit4("Clear Color", m_clearColor);
         ImGui::Separator();
-        ImGui::Text("Layers");
-        for (auto renderable : m_renderables)
+        if (ImGui::CollapsingHeader("Layers", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
         {
-            bool active = renderable->ShouldRender();
-            ImGui::Checkbox(renderable->GetName().c_str(), &active);
-            if (active != renderable->ShouldRender())
+            auto renderable = m_renderables.begin();
+            for (int i = 0; renderable != m_renderables.end(); ++renderable, ++i)
             {
-                renderable->SetShouldRender(active);
+                (*renderable)->SetShouldRender(false);
+                ImGui::RadioButton((*renderable)->GetName().c_str(), &m_activeDemo, i);
+            }
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Camera Controls");
+        glm::vec3 camPos = m_camera.GetPosition();
+        ImGui::InputFloat3("Position", &camPos[0]);
+        if (camPos != m_camera.GetPosition())
+        {
+            m_camera.SetPosition(camPos);
+        }
+
+        static glm::vec3 lookAt(0.f);
+        ImGui::InputFloat3("##LookAt", &lookAt[0]);
+        ImGui::SameLine();
+        if (ImGui::Button("LookAt"))
+        {
+            m_camera.LookAt(lookAt);
+        }
+
+        if (ImGui::CollapsingHeader("Camera Movement"))
+        {
+            if (ImGui::Button("L##mov"))
+            {
+                m_camera.MoveLocal(glm::vec3(0.5f, 0.0f, 0.0f));
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("R##mov"))
+            {
+                m_camera.MoveLocal(glm::vec3(-0.5f, 0.0f, 0.0f));
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("^##mov"))
+            {
+                m_camera.MoveLocal(glm::vec3(0.0f, 0.5f, 0.0f));
+            }
+            if (ImGui::Button("F##mov"))
+            {
+                m_camera.MoveLocal(glm::vec3(0.0f, 0.0f, 0.5f));
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("B##mov"))
+            {
+                m_camera.MoveLocal(glm::vec3(0.0f, 0.0f, -0.5f));
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("v##mov"))
+            {
+                m_camera.MoveLocal(glm::vec3(0.0f, -0.5f, 0.0f));
+            }
+        }
+        if (ImGui::CollapsingHeader("Camera Rotation"))
+        {
+            if (ImGui::Button("<-##rot"))
+            {
+                m_camera.Rotate(glm::vec3(0.0f, 1.0f, 0.0f), 10.f);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("->##rot"))
+            {
+                m_camera.Rotate(glm::vec3(0.0f, -1.0f, 0.0f), 10.f);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("^##rot"))
+            {
+                m_camera.Rotate(glm::vec3(-1.0f, 0.0f, 0.0f), 10.f);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("v##rot"))
+            {
+                m_camera.Rotate(glm::vec3(1.0f, 0.0f, 0.0f), 10.f);
             }
         }
     }
     ImGui::End();  // always call end
+
+    if (m_activeDemo < m_renderables.size())
+        m_renderables[m_activeDemo]->SetShouldRender(true);
 
     if (g_ShowDemoWindow)
         ImGui::ShowDemoWindow(&g_ShowDemoWindow);
@@ -115,7 +198,15 @@ void GLRenderWindow::NewFrame()
     for (auto renderable : m_renderables)
     {
         if (renderable->ShouldRender())
-            renderable->NewFrame();
+            renderable->NewFrame(frameMs);
+    }
+
+    if (m_prevDisplaySize[0] != m_displaySize[0] || m_prevDisplaySize[1] != m_displaySize[1])
+    {
+        float aspect = static_cast<float>(m_displaySize[0]) / static_cast<float>(m_displaySize[1]);
+        m_camera.SetAspect(aspect);
+        m_prevDisplaySize[0] = m_displaySize[0];
+        m_prevDisplaySize[1] = m_displaySize[1];
     }
 }
 
@@ -131,7 +222,9 @@ void GLRenderWindow::Render()
     for (auto renderable : m_renderables)
     {
         if (renderable->ShouldRender())
+        {
             renderable->Render();
+        }
     }
 
     GLGui::RenderDrawData(ImGui::GetDrawData());
@@ -150,5 +243,6 @@ void GLRenderWindow::AddRenderable(GLRenderablePtr renderable)
 
 void GLRenderWindow::RemoveRenderable(GLRenderablePtr renderable)
 {
-    m_renderables.remove(renderable);
+    m_activeDemo = 0;
+    m_renderables.erase(std::remove(m_renderables.begin(), m_renderables.end(), renderable), m_renderables.end());
 }

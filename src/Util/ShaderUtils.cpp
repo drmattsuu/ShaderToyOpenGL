@@ -2,6 +2,8 @@
 
 #include "FileUtils.h"
 
+#include "lodepng.h"
+
 #include <GL/glew.h>
 
 #include <iostream>
@@ -117,8 +119,41 @@ GLuint LoadTextureBMPFile(const std::string& bmpPath)
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
 
-    // Give the image to OpenGL todo : dataPos may be off by one, double check this
+    // Give the image to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, &file[dataPos]);
+    // Filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // MipMaps
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, prevTextureBinding2D);
+    return textureId;
+}
+
+GLuint LoadTexturePNGFile(const std::string& pngFile)
+{
+    // Due to modern hardware & versions of OGL we can use NPOT Textures, in earlier versions of OGL or old hardware we
+    // may have had to force this texture to be in a power of two.
+    std::vector<unsigned char> image;
+    unsigned width, height;
+    unsigned error = lodepng::decode(image, width, height, pngFile);
+
+    if (error != 0)
+    {
+        std::cout << pngFile << " error: " << error << " : " << lodepng_error_text(error) << std::endl;
+        return 0;
+    }
+
+    GLuint prevTextureBinding2D;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*)&prevTextureBinding2D);
+
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
     // Filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

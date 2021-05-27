@@ -21,7 +21,7 @@ int main()
         GLRenderablePtr helloTriangle(new GLHelloTriangle());
         glRenderWindow.AddRenderable(helloTriangle);
 
-        GLRenderablePtr cube(new GLCubeRenderable(glRenderWindow.GetWindow()));
+        GLRenderablePtr cube(new GLCubeRenderable(glRenderWindow.GetCamera()));
         glRenderWindow.AddRenderable(cube);
 
         while (!glRenderWindow.GetShouldClose())

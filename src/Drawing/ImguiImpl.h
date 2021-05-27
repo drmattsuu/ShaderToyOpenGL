@@ -10,7 +10,7 @@ bool Init(GLFWwindow* window, bool installCallbacks);
 void Shutdown();
 
 void NewFrame();
-void RenderDrawData(ImDrawData* draw_data);
+void RenderDrawData(ImDrawData* drawData);
 
 bool CreateFontsTexture();
 void DestroyFontsTexture();

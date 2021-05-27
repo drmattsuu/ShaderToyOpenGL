@@ -15,7 +15,7 @@ public:
     virtual void Init() = 0;
     virtual void CleanGLResources() = 0;
 
-    virtual void NewFrame() = 0;
+    virtual void NewFrame(float deltaT) = 0;
     virtual void Render() = 0;
 
     bool ShouldRender() { return m_renderEnabled; }
@@ -27,7 +27,7 @@ protected:
     GLuint LoadShader(const std::string& vertPath, const std::string& fragPath);
 
 protected:
-    bool m_renderEnabled = true;
+    bool m_renderEnabled{false};
     std::string m_name;
 };
 
@@ -43,7 +43,7 @@ public:
     void Init() override;
     void CleanGLResources() override;
 
-    void NewFrame() override;
+    void NewFrame(float deltaT) override;
     void Render() override;
 
 private:
@@ -54,5 +54,11 @@ private:
 
     GLclampf m_color[4] = {0.3f, 0.3f, 1.f, 1.f};
 
-    static const GLfloat s_bufData[];
+    // clang-format off
+    GLfloat m_bufData[9] = {
+        -1.0f, -1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         0.0f,  1.0f, 0.0f,
+    };
+    // clang-format on
 };
