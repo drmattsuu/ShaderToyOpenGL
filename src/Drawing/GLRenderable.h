@@ -50,7 +50,6 @@ private:
     GLuint m_vertexArrayId = 0;
     GLuint m_vertexBufferId = 0;
     GLuint m_shaderId = 0;
-    GLint m_colorUniformLocation = -1;
 
     GLclampf m_color[4] = {0.3f, 0.3f, 1.f, 1.f};
 
@@ -59,6 +58,38 @@ private:
         -1.0f, -1.0f, 0.0f,
          1.0f, -1.0f, 0.0f,
          0.0f,  1.0f, 0.0f,
+    };
+    // clang-format on
+};
+
+class GLRainbowTriangle : public GLRenderable
+{
+public:
+    GLRainbowTriangle() : GLRenderable("RainbowTriangle") {}
+    ~GLRainbowTriangle() { CleanGLResources(); }
+
+    void Init() override;
+    void CleanGLResources() override;
+
+    void NewFrame(float deltaT) override;
+    void Render() override;
+
+private:
+    GLuint m_vertexArrayId = 0;
+    GLuint m_vertexBufferId = 0;
+    GLuint m_colorBufferId = 0;
+    GLuint m_shaderId = 0;
+
+    // clang-format off
+    GLfloat m_bufData[9] = {
+        -1.0f, -1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         0.0f,  1.0f, 0.0f,
+    };
+    GLfloat m_bufColorData[12] = {
+        1.0, 0.0f, 0.0f, 1.0f,
+        0.0, 1.0f, 0.0f, 1.0f,
+        0.0, 0.0f, 1.0f, 1.0f,
     };
     // clang-format on
 };

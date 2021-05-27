@@ -25,6 +25,8 @@ public:
     void AddRenderable(GLRenderablePtr renderable);
     void RemoveRenderable(GLRenderablePtr renderable);
 
+    void AddAllRenderables();
+
     GLFWwindow* GetWindow() { return m_window; }
 
     const GLCamera& GetCamera() const { return m_camera; }

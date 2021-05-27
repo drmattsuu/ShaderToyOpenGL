@@ -21,9 +21,6 @@ void GLHelloTriangle::Init()
     m_shaderId = LoadShader("resources/triangle.vert", "resources/triangle.frag");
 
     glGenBuffers(1, &m_vertexBufferId);
-    // glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_STATIC_DRAW);
-    m_colorUniformLocation = glGetUniformLocation(m_shaderId, "u_color");
 }
 
 void GLHelloTriangle::CleanGLResources()
@@ -46,7 +43,7 @@ void GLHelloTriangle::NewFrame(float deltaT)
     {
         Init();
     }
-    
+
     ImGui::SetNextWindowPos(ImVec2(300.f, 10.f), ImGuiCond_FirstUseEver);
     if (ImGui::Begin(m_name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
@@ -73,15 +70,97 @@ void GLHelloTriangle::Render()
 
     glUseProgram(m_shaderId);
 
-    glUniform4fv(m_colorUniformLocation, 1, m_color);
+    // populate u_color data
+    glUniform4fv(0, 1, m_color);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_DYNAMIC_DRAW);
+    // populate i_vertexPosition data
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
+    glDisableVertexAttribArray(0);
+
+    // clear our VBO selection and GL state so future calls to GL don't pollute our data here.
+    glUseProgram(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void GLRainbowTriangle::Init()
+{
+    glGenVertexArrays(1, &m_vertexArrayId);
+    glBindVertexArray(m_vertexArrayId);
+
+    m_shaderId = LoadShader("resources/triangleRainbow.vert", "resources/triangle.frag");
+
+    glGenBuffers(1, &m_vertexBufferId);
+
+    glGenBuffers(1, &m_colorBufferId);
+    glBindBuffer(GL_ARRAY_BUFFER, m_colorBufferId);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufColorData), m_bufColorData, GL_STATIC_DRAW);
+}
+
+void GLRainbowTriangle::CleanGLResources()
+{
+    if (m_colorBufferId)
+        glDeleteBuffers(1, &m_colorBufferId);
+    if (m_vertexBufferId)
+        glDeleteBuffers(1, &m_vertexBufferId);
+    if (m_vertexArrayId)
+        glDeleteVertexArrays(1, &m_vertexArrayId);
+    if (m_shaderId)
+        glDeleteProgram(m_shaderId);
+
+    m_colorBufferId = 0;
+    m_vertexBufferId = 0;
+    m_vertexArrayId = 0;
+    m_shaderId = 0;
+}
+
+void GLRainbowTriangle::NewFrame(float deltaT)
+{
+    if (!m_shaderId)
+    {
+        Init();
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(300.f, 10.f), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin(m_name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        if (ImGui::CollapsingHeader("Triangle Vertex Buffer"))
+        {
+            ImGui::InputFloat3("0", &m_bufData[0]);
+            ImGui::InputFloat3("1", &m_bufData[3]);
+            ImGui::InputFloat3("2", &m_bufData[6]);
+        }
+    }
+    ImGui::End();
+}
+
+void GLRainbowTriangle::Render()
+{
+    glBindVertexArray(m_vertexArrayId);
+
+    glUseProgram(m_shaderId);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+    // Fill the data every frame because it can change
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_DYNAMIC_DRAW);
+    // populate i_vertexPosition data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, m_colorBufferId);
+    // populate i_vertexColor data
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 
     // clear our VBO selection and GL state so future calls to GL don't pollute our data here.

@@ -4,14 +4,14 @@ add_executable(GLShaderToy
     "main.cpp"
     "Drawing/GLCamera.cpp"
     "Drawing/GLCubeRenderable.cpp"
-    "Drawing/GLInput.cpp"
+    "Drawing/GLInputManager.cpp"
     "Drawing/GLRenderable.cpp"
     "Drawing/GLRenderWindow.cpp"
     "Drawing/ImguiImpl.cpp"
     "Util/FileUtils.cpp"
     "Util/lodepng.cpp"
     "Util/ShaderUtils.cpp"
-    )
+)
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem

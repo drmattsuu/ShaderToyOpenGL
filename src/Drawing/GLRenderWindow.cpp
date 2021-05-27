@@ -1,5 +1,6 @@
 #include "GLRenderWindow.h"
 
+#include "GLCubeRenderable.h"
 #include "GLRenderable.h"
 
 #include "ImguiImpl.h"
@@ -245,4 +246,16 @@ void GLRenderWindow::RemoveRenderable(GLRenderablePtr renderable)
 {
     m_activeDemo = 0;
     m_renderables.erase(std::remove(m_renderables.begin(), m_renderables.end(), renderable), m_renderables.end());
+}
+
+void GLRenderWindow::AddAllRenderables()
+{
+    GLRenderablePtr helloTriangle(new GLHelloTriangle());
+    AddRenderable(helloTriangle);
+
+    GLRenderablePtr rainbowTriangle(new GLRainbowTriangle());
+    AddRenderable(rainbowTriangle);
+
+    GLRenderablePtr cube(new GLCubeRenderable(GetCamera()));
+    AddRenderable(cube);
 }

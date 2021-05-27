@@ -1,6 +1,4 @@
 #include "Drawing/GLRenderWindow.h"
-#include "Drawing/GLRenderable.h"
-#include "Drawing/GLCubeRenderable.h"
 
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -18,12 +16,7 @@ int main()
 
     if (glRenderWindow.GLInit())
     {
-        GLRenderablePtr helloTriangle(new GLHelloTriangle());
-        glRenderWindow.AddRenderable(helloTriangle);
-
-        GLRenderablePtr cube(new GLCubeRenderable(glRenderWindow.GetCamera()));
-        glRenderWindow.AddRenderable(cube);
-
+        glRenderWindow.AddAllRenderables();
         while (!glRenderWindow.GetShouldClose())
         {
             // Will also update the internal state of our window so needs to go at the start of the frame.
