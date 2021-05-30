@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GLCamera.h"
+#include "GLInputManager.h"
 #include "GLRenderable.h"
 
 #include <GL/glew.h>
@@ -19,6 +20,8 @@ public:
     void NewFrame(float deltaT) override;
     void Render() override;
 
+    bool HandleKeyEvent(EventPtr event);
+
 private:
     GLuint m_vertexBufferId = 0;
     GLuint m_uvBufferId = 0;
@@ -34,4 +37,6 @@ private:
     glm::vec3 m_rotSpeed{0.f};
 
     const GLCamera& m_camera;
+
+    bool m_arrows[4]{false, false, false, false};
 };

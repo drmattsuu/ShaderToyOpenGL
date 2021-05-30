@@ -11,6 +11,8 @@ add_executable(GLShaderToy
     "Util/FileUtils.cpp"
     "Util/lodepng.cpp"
     "Util/ShaderUtils.cpp"
+    "Util/FastDelegate.h"
+    "Util/FastDelegateBind.h"
 )
 
 target_link_libraries(GLShaderToy

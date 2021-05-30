@@ -1,5 +1,6 @@
 #include "GLRenderable.h"
 
+#include "GLInputManager.h"
 #include "Util/ShaderUtils.h"
 
 #include <GL/glew.h>
@@ -7,6 +8,39 @@
 #include <imgui.h>
 
 #include <string>
+
+GLRenderable::~GLRenderable()
+{
+    auto it = m_subscribedEvents.begin();
+    auto end = m_subscribedEvents.end();
+    for (it; it != end; it++)
+    {
+         GLInputManager::GetInputManager()->UnsubscribeEvent(it->first, it->second);
+    }
+    m_subscribedEvents.clear();
+}
+
+EventDelegatePtr GLRenderable::SubscribeEvent(EventType e)
+{
+    if (m_subscribedEvents[e])
+    {
+        // todo : warn event already subscribed to this slot
+        UnsubscribeEvent(e);
+    }
+
+    auto result = GLInputManager::GetInputManager()->SubscribeEvent(e);
+    m_subscribedEvents[e] = result;
+    return result;
+}
+
+void GLRenderable::UnsubscribeEvent(EventType e)
+{
+    auto it = m_subscribedEvents.find(e);
+    auto end = m_subscribedEvents.end();
+
+    if (it != end)
+        GLInputManager::GetInputManager()->UnsubscribeEvent(it->first, it->second);
+}
 
 GLuint GLRenderable::LoadShader(const std::string& vertPath, const std::string& fragPath)
 {
@@ -152,14 +186,14 @@ void GLRainbowTriangle::Render()
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_bufData), m_bufData, GL_DYNAMIC_DRAW);
     // populate i_vertexPosition data
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    
+
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, m_colorBufferId);
     // populate i_vertexColor data
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    
+
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 

@@ -1,6 +1,7 @@
 #include "GLRenderWindow.h"
 
 #include "GLCubeRenderable.h"
+#include "GLInputManager.h"
 #include "GLRenderable.h"
 
 #include "ImguiImpl.h"
@@ -55,6 +56,8 @@ bool GLRenderWindow::GLInit()
         return false;
     }
 
+    GLInputManager::GetInputManager()->InstallCallbacks(m_window);
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -75,12 +78,18 @@ bool GLRenderWindow::GLInit()
     m_camera.SetAspect(aspect);
 
     m_contextCreated = true;
+
+    int maxAttrs;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttrs);
+    std::cout << "Maximum vertex attributes supported: " << maxAttrs << std::endl;
     return true;
 }
 
 void GLRenderWindow::GLCleanUp()
 {
+    GLInputManager::GetInputManager()->UninstallCallbacks(m_window);
     m_renderables.clear();
+    GLGui::Shutdown();
     glfwDestroyWindow(m_window);
     glfwTerminate();
 }
@@ -98,9 +107,12 @@ void GLRenderWindow::NewFrame()
     ImGui::NewFrame();
 
     ImGuiIO& io = ImGui::GetIO();
-    ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Appearing);
     float frameMs = io.DeltaTime * 1000.f;
 
+    GLInputManager::GetInputManager()->Update(frameMs, m_window);
+    m_camera.Update(frameMs);
+    
+    ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Appearing);
     if (ImGui::Begin("##DebugInfoWindow", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
     {
         ImGui::Text("%.3f ms/frame (%.1f FPS)", frameMs, io.Framerate);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GLInputManager.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -10,7 +12,7 @@ class GLRenderable
 {
 public:
     GLRenderable(const std::string& name) : m_name(name) {}
-    virtual ~GLRenderable() = default;
+    virtual ~GLRenderable();
 
     virtual void Init() = 0;
     virtual void CleanGLResources() = 0;
@@ -24,11 +26,14 @@ public:
     const std::string& GetName() { return m_name; }
 
 protected:
+    EventDelegatePtr SubscribeEvent(EventType e);
+    void UnsubscribeEvent(EventType e);
     GLuint LoadShader(const std::string& vertPath, const std::string& fragPath);
 
 protected:
     bool m_renderEnabled{false};
     std::string m_name;
+    std::map<EventType, EventDelegatePtr> m_subscribedEvents;
 };
 
 using GLRenderablePtr = std::shared_ptr<GLRenderable>;

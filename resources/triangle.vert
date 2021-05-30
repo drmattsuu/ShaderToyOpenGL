@@ -9,6 +9,5 @@ out vec4 frag_color;
 void main()
 {
     frag_color = u_color;
-    gl_Position.xyz = i_vertexPosition;
-    gl_Position.w = 1.0;
+    gl_Position = vec4(i_vertexPosition, 1.0);
 }

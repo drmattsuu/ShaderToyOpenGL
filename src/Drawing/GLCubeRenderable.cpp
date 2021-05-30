@@ -1,5 +1,6 @@
 #include "GLCubeRenderable.h"
 
+#include "GLInputManager.h"
 #include "Util/ShaderUtils.h"
 
 #include <GL/glew.h>
@@ -144,6 +145,8 @@ void GLCubeRenderable::Init()
                      GL_STATIC_DRAW);
         m_textureId = LoadTexturePNGFile("resources/cube.png");
     }
+
+    SubscribeEvent(EventType::Key)->bind(this, &GLCubeRenderable::HandleKeyEvent);
 }
 
 void GLCubeRenderable::CleanGLResources()
@@ -197,15 +200,29 @@ void GLCubeRenderable::NewFrame(float deltaT)
         if (ImGui::CollapsingHeader("Texture"))
             ImGui::Image((ImTextureID)(intptr_t)(m_textureId), ImVec2(256.f, 256.f));
     }
+
+    if (m_arrows[0])
+    {
+        m_rotSpeed += glm::vec3(0.001f * deltaT, 0.0f, 0.0f);
+    }
+    if (m_arrows[1])
+    {
+        m_rotSpeed -= glm::vec3(0.001f * deltaT, 0.0f, 0.0f);
+    }
+    if (m_arrows[2])
+    {
+        m_rotSpeed += glm::vec3(0.0f, 0.001f * deltaT, 0.0f);
+    }
+    if (m_arrows[3])
+    {
+        m_rotSpeed -= glm::vec3(0.0f, 0.001f * deltaT, 0.0f);
+    }
     ImGui::End();
     if (m_rotSpeed != glm::vec3(0.f))
     {
         float spd = glm::length(m_rotSpeed);
         m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f * spd)), m_rotSpeed);
     }
-    // m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f) * m_rotSpeed.x), glm::vec3(1.f, 0.0f, 0.0f));
-    // m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f) * m_rotSpeed.y), glm::vec3(0.0f, 1.f, 0.0f));
-    // m_model = glm::rotate(m_model, glm::radians((deltaT * 0.36f) * m_rotSpeed.z), glm::vec3(0.0f, 0.0f, 1.f));
 }
 
 void GLCubeRenderable::Render()
@@ -249,4 +266,38 @@ void GLCubeRenderable::Render()
         glEnable(GL_DEPTH_TEST);
     else
         glDisable(GL_DEPTH_TEST);
+}
+
+bool GLCubeRenderable::HandleKeyEvent(EventPtr event)
+{
+    if (!ShouldRender())
+    {
+        // Don't eat other events
+        return false;
+    }
+    auto buttonEvent = dynamic_cast<ButtonEvent*>(event.get());
+    if (buttonEvent)
+    {
+        bool pressed = buttonEvent->Action != GLFW_RELEASE;
+        int key = buttonEvent->Button;
+        switch (key)
+        {
+            case GLFW_KEY_UP:
+                m_arrows[0] = pressed;
+                break;
+            case GLFW_KEY_DOWN:
+                m_arrows[1] = pressed;
+                break;
+            case GLFW_KEY_LEFT:
+                m_arrows[2] = pressed;
+                break;
+            case GLFW_KEY_RIGHT:
+                m_arrows[3] = pressed;
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+    return false;
 }
