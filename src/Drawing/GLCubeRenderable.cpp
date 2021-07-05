@@ -152,7 +152,7 @@ void GLCubeRenderable::Init()
 {
     glGenVertexArrays(1, &m_vertexArrayId);
     glBindVertexArray(m_vertexArrayId);
-    m_shaderId = LoadShader("resources/cube.vert", "resources/cube.frag");
+    m_shaderId = LoadShader("resources/shaders/cube.vert", "resources/shaders/cube.frag");
 
     m_persUniformLocation = glGetUniformLocation(m_shaderId, "u_perspective");
     m_viewUniformLocation = glGetUniformLocation(m_shaderId, "u_view");
@@ -216,7 +216,7 @@ void GLCubeRenderable::NewFrame(float deltaT)
             if (m_shaderId)
                 glDeleteProgram(m_shaderId);
 
-            m_shaderId = LoadShader("resources/cube.vert", "resources/cube.frag");
+            m_shaderId = LoadShader("resources/shaders/cube.vert", "resources/shaders/cube.frag");
 
             m_persUniformLocation = glGetUniformLocation(m_shaderId, "u_perspective");
             m_viewUniformLocation = glGetUniformLocation(m_shaderId, "u_view");

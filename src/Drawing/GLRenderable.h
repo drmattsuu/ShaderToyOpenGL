@@ -21,6 +21,7 @@ public:
     virtual void Render() = 0;
 
     bool ShouldRender() { return m_renderEnabled; }
+    bool ShouldLoadImmediately() { return false; };
     void SetShouldRender(bool shouldRender) { m_renderEnabled = shouldRender; }
 
     const std::string& GetName() { return m_name; }

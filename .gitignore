@@ -38,3 +38,4 @@ build
 
 # include meshes
 !resources/*.obj
+!resources/*/*.obj

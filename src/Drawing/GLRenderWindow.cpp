@@ -3,6 +3,7 @@
 #include "GLCubeRenderable.h"
 #include "GLCubesRenderable.h"
 #include "GLInputManager.h"
+#include "GLMeshRenderable.h"
 #include "GLRenderable.h"
 
 #include "ImguiImpl.h"
@@ -17,6 +18,8 @@
 #include <vector>
 
 static bool g_ShowDemoWindow = false;
+static bool g_cullBackfaces = true;
+static int g_cullMode = GL_BACK;
 
 static void glfwErrorCallback(int error, const char* description)
 {
@@ -213,6 +216,29 @@ void GLRenderWindow::NewFrame()
         ImGui::Text("%.3f ms/frame (%.1f FPS)", frameMs, io.Framerate);
         ImGui::Checkbox("Show ImGui Demo", &g_ShowDemoWindow);
         ImGui::ColorEdit4("Clear Color", m_clearColor);
+        ImGui::Checkbox("Cull Backfaces", &g_cullBackfaces);
+        if (g_cullBackfaces)
+        {
+            const int glFaceBits[] = {GL_BACK, GL_FRONT, GL_FRONT_AND_BACK};
+            const char* glFaceBitLabels[] = {"GL_BACK", "GL_FRONT", "GL_FRONT_AND_BACK"};
+            static int currentItemIndex = 0;
+            const char* currentLabel = glFaceBitLabels[currentItemIndex];
+            if (ImGui::BeginCombo("CullFace", currentLabel))
+            {
+                for (int i = 0; i < IM_ARRAYSIZE(glFaceBits); ++i)
+                {
+                    const bool isSelected = currentItemIndex == i;
+                    if (ImGui::Selectable(glFaceBitLabels[i], isSelected))
+                        currentItemIndex = i;
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            g_cullMode = glFaceBits[currentItemIndex];
+        }
         ImGui::Separator();
         if (ImGui::CollapsingHeader("Layers", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
         {
@@ -257,10 +283,13 @@ void GLRenderWindow::NewFrame()
 
     if (m_prevDisplaySize[0] != m_displaySize[0] || m_prevDisplaySize[1] != m_displaySize[1])
     {
-        float aspect = static_cast<float>(m_displaySize[0]) / static_cast<float>(m_displaySize[1]);
-        m_camera.SetAspect(aspect);
-        m_prevDisplaySize[0] = m_displaySize[0];
-        m_prevDisplaySize[1] = m_displaySize[1];
+        if (m_displaySize[0] != 0.f && m_displaySize[1] != 0.f)
+        {
+            float aspect = static_cast<float>(m_displaySize[0]) / static_cast<float>(m_displaySize[1]);
+            m_camera.SetAspect(aspect);
+            m_prevDisplaySize[0] = m_displaySize[0];
+            m_prevDisplaySize[1] = m_displaySize[1];
+        }
     }
 }
 
@@ -272,6 +301,13 @@ void GLRenderWindow::Render()
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    bool cullingBackfaces = glIsEnabled(GL_CULL_FACE);
+    if (g_cullBackfaces)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(g_cullMode);
+    }
+
     // Call Render functions
     for (auto renderable : m_renderables)
     {
@@ -279,6 +315,15 @@ void GLRenderWindow::Render()
         {
             renderable->Render();
         }
+    }
+
+    if (cullingBackfaces)
+    {
+        glEnable(GL_CULL_FACE);
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
     }
 
     GLGui::RenderDrawData(ImGui::GetDrawData());
@@ -289,7 +334,7 @@ void GLRenderWindow::Render()
 void GLRenderWindow::AddRenderable(GLRenderablePtr renderable)
 {
     m_renderables.push_back(renderable);
-    if (m_contextCreated)
+    if (m_contextCreated && renderable->ShouldLoadImmediately())
     {
         renderable->Init();
     }
@@ -314,4 +359,20 @@ void GLRenderWindow::AddAllRenderables()
 
     GLRenderablePtr cubes(new GLCubesRenderable(GetCamera()));
     AddRenderable(cubes);
+
+    AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "Monkey")));
+
+    AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "planet/planet")));
+
+    AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "rock/rock")));
+
+    // AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "vampire/dancing_vampire", ".dae")));
+
+    AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "nanosuit/nanosuit")));
+
+    AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "cyborg/cyborg")));
+
+    AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "backpack/backpack")));
+
+    // AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "radar")));
 }

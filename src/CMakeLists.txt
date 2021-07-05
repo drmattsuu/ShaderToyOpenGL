@@ -13,7 +13,7 @@ add_executable(GLShaderToy
     "Util/lodepng.cpp"
     "Util/ShaderUtils.cpp"
     "Util/FastDelegate.h"
-    "Util/FastDelegateBind.h")
+    "Util/FastDelegateBind.h" "Drawing/Model/Mesh.cpp" "Drawing/Model/Model.cpp" "Drawing/GLMeshRenderable.cpp")
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem

@@ -52,7 +52,7 @@ void GLHelloTriangle::Init()
     glGenVertexArrays(1, &m_vertexArrayId);
     glBindVertexArray(m_vertexArrayId);
 
-    m_shaderId = LoadShader("resources/triangle.vert", "resources/triangle.frag");
+    m_shaderId = LoadShader("resources/shaders/triangle.vert", "resources/shaders/triangle.frag");
 
     glGenBuffers(1, &m_vertexBufferId);
 }
@@ -128,7 +128,7 @@ void GLRainbowTriangle::Init()
     glGenVertexArrays(1, &m_vertexArrayId);
     glBindVertexArray(m_vertexArrayId);
 
-    m_shaderId = LoadShader("resources/triangleRainbow.vert", "resources/triangle.frag");
+    m_shaderId = LoadShader("resources/shaders/triangleRainbow.vert", "resources/shaders/triangle.frag");
 
     glGenBuffers(1, &m_vertexBufferId);
 

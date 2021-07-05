@@ -25,6 +25,7 @@ public:
 
     void SetPosition(const glm::vec3& pos) { m_position = pos; }
     const glm::vec3& GetPosition() const { return m_position; }
+    const glm::vec3& GetNormal() const { return m_normal; }
     void SetAspect(float aspect);
     float GetAspect() const { return m_aspectRatio; }
     void SetFOV(float fovDeg);

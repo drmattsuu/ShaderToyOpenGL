@@ -600,7 +600,7 @@ bool GLGui::CreateDeviceObjects()
     GLint prevVertexArray;
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVertexArray);
 
-    g_ShaderHandle = LoadShaderFile("resources/imgui.vert", "resources/imgui.frag");
+    g_ShaderHandle = LoadShaderFile("resources/shaders/imgui.vert", "resources/shaders/imgui.frag");
 
     g_AttribLocationTex = glGetUniformLocation(g_ShaderHandle, "Texture");
     g_AttribLocationProjMtx = glGetUniformLocation(g_ShaderHandle, "ProjMtx");
