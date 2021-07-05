@@ -36,3 +36,5 @@ thirdparty/boost_1_70_0
 build
 .vs
 
+# include meshes
+!resources/*.obj

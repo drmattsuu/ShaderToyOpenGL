@@ -6,6 +6,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
+#include "imgui.h"
+
 namespace
 {
 static const glm::vec3 g_UpVector = glm::vec3(0, 1, 0);
@@ -52,18 +54,18 @@ void GLCamera::Update(float deltaT)
         MoveLocal(move);
     }
 
-    if (m_mouseButton && m_mouseDelta != glm::vec2(0.f))
+    if (!ImGui::GetIO().WantCaptureMouse && m_mouseButton && m_mouseDelta != glm::vec2(0.f))
     {
         float yScalar = 1 / m_aspectRatio;
         glm::vec2 rotVal(m_mouseDelta.y * yScalar, -m_mouseDelta.x);
         glm::vec2 rotDir = glm::normalize(rotVal);
 
-        float deg = glm::length(rotVal) * 0.1f;  // (deltaT * 0.001f);
+        float deg = glm::length(rotVal) * 0.1f;
         Rotate(glm::vec3(rotDir.x, rotDir.y, 0.0f), deg);
-
-        m_mouseDelta.x = 0.f;
-        m_mouseDelta.y = 0.f;
     }
+    
+    m_mouseDelta.x = 0.f;
+    m_mouseDelta.y = 0.f;
 }
 
 glm::mat4 GLCamera::GetViewMatrix() const

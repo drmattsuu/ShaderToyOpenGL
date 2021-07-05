@@ -8,13 +8,15 @@ layout(location = 1) in vec2 i_vertexUV;
 out vec2 frag_uv;
 
 // Values that stay constant for the whole mesh.
-uniform mat4 u_mvp;
+uniform mat4 u_perspective;
+uniform mat4 u_view;
+uniform mat4 u_model;
 
 void main(){
 
     // Output position of the vertex, in clip space : perspective * view * model * position
-    gl_Position =  u_mvp * vec4(i_vertexPosition, 1);
-    
+    gl_Position =  u_perspective * u_view * u_model * vec4(i_vertexPosition, 1);
+
     // UV of the vertex.
     frag_uv = i_vertexUV;
 }

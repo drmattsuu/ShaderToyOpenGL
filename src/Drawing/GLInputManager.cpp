@@ -91,13 +91,6 @@ void GLInputManager::Update(float deltaT, GLFWwindow* window)
             SendEvent(event);
         }
     }
-    
-    ImGui::SetNextWindowPos(ImVec2(m_cursorPos[0] + 10.f, m_cursorPos[1] + 10.f), ImGuiCond_Always, ImVec2(0.f, 0.f));
-    if(ImGui::Begin("CursorDebug", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
-    {
-        ImGui::Text("Cursor Pos: %.f %.f", m_cursorPos[0], m_cursorPos[1]);
-    }
-    ImGui::End();
 }
 
 EventDelegatePtr GLInputManager::SubscribeEvent(EventType e, bool pushToFront)

@@ -62,6 +62,7 @@ set(ALL_LIBS
   glew
   glm
   imgui
+  assimp
 )
 
 add_subdirectory (src)

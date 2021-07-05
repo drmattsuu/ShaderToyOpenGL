@@ -10,3 +10,5 @@ GLint LinkShader(GLuint programId, GLuint vertShaderId, GLuint fragShaderId);
 
 GLuint LoadTextureBMPFile(const std::string& bmpPath);
 GLuint LoadTexturePNGFile(const std::string& pngFile);
+
+GLuint LoadTextureSTB(const std::string& filePath, bool gammaCorrection);

@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath)
 {
     std::string vertSrc = LoadFileText(vertPath);
@@ -163,5 +166,43 @@ GLuint LoadTexturePNGFile(const std::string& pngFile)
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, prevTextureBinding2D);
+    return textureId;
+}
+
+GLuint LoadTextureSTB(const std::string& filePath, bool gammaCorrection)
+{
+    GLuint textureId = 0;
+    glGenTextures(1, &textureId);
+
+    int width, height, nComponents;
+    unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &nComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nComponents == 1)
+            format = GL_RED;
+        else if (nComponents == 3)
+            format = GL_RGB;
+        else if (nComponents == 4)
+            format = GL_RGBA;
+        else
+            format = GL_BLUE;  // something blindingly obvious has gone wrong.
+
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << filePath << std::endl;
+        stbi_image_free(data);
+    }
+
     return textureId;
 }

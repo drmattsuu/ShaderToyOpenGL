@@ -4,6 +4,7 @@ add_executable(GLShaderToy
     "main.cpp"
     "Drawing/GLCamera.cpp"
     "Drawing/GLCubeRenderable.cpp"
+    "Drawing/GLCubesRenderable.cpp"
     "Drawing/GLInputManager.cpp"
     "Drawing/GLRenderable.cpp"
     "Drawing/GLRenderWindow.cpp"
@@ -12,8 +13,7 @@ add_executable(GLShaderToy
     "Util/lodepng.cpp"
     "Util/ShaderUtils.cpp"
     "Util/FastDelegate.h"
-    "Util/FastDelegateBind.h"
-)
+    "Util/FastDelegateBind.h")
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem
@@ -28,6 +28,8 @@ target_include_directories(GLShaderToy
         ${CMAKE_SOURCE_DIR}/thirdparty/glfw/include
         ${CMAKE_SOURCE_DIR}/thirdparty/glew-2.1.0/include
         ${CMAKE_SOURCE_DIR}/thirdparty/imgui
+        ${CMAKE_SOURCE_DIR}/thirdparty/assimp/include
+        ${CMAKE_SOURCE_DIR}/thirdparty/stb
 )
 
 install(TARGETS GLShaderToy

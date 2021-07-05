@@ -60,3 +60,5 @@ target_include_directories(imgui
     imgui
 )
 
+## assimp ##
+add_subdirectory(assimp)
