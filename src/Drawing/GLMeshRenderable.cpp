@@ -7,38 +7,58 @@
 #include <GLFW/glfw3.h>
 
 #include <imgui.h>
-#include <assimp/Importer.hpp>
 #include <glm/ext.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include <vector>
 
 GLMeshRenderable::GLMeshRenderable(const GLCamera& camera, const std::string& meshName,
-                                   const std::string& meshType /*= ".obj"*/, GLuint shaderId /*= 0*/)
-    : GLRenderable(meshName), m_camera(camera), m_shaderId(shaderId)
+                                   const std::string& meshType /*= ".obj"*/)
+    : GLRenderable(meshName), m_camera(camera)
 {
     m_meshFilename = "resources/" + meshName + meshType;
 }
 
 void GLMeshRenderable::Init()
 {
+    m_model = ModelPtr(new Model(m_meshFilename));
+
     if (!m_shaderId)
     {
-        m_shaderId = LoadShader("resources/shaders/model.vert", "resources/shaders/model.frag");
-        m_ownsShader = true;
+        bool diffuse = false;
+        bool specular = false;
+        bool normal = false;
+        for (const Texture& texture : m_model->GetLoadedTextures())
+        {
+            if (texture.type == k_TextureTypeDiffuse)
+                diffuse = true;
+            else if (texture.type == k_TextureTypeSpecular)
+                specular = true;
+            else if (texture.type == k_TextureTypeNormal)
+                normal = true;
+        }
+
+        std::string prependDefines = "";
+        if (!diffuse)
+            prependDefines += "#define SKIP_DIFFUSE\n";
+        if (!specular)
+            prependDefines += "#define SKIP_SPECULAR\n";
+        if (!normal)
+            prependDefines += "#define SKIP_NORMAL\n";
+
+        m_shaderId = LoadShaderFile("resources/shaders/model.vert", "resources/shaders/model.frag", prependDefines);
     }
+
     m_persUniformLocation = glGetUniformLocation(m_shaderId, "u_perspective");
     m_viewUniformLocation = glGetUniformLocation(m_shaderId, "u_view");
     m_modelUniformLocation = glGetUniformLocation(m_shaderId, "u_model");
     m_lightPosUniformLocation = glGetUniformLocation(m_shaderId, "u_lightPos");
     m_cameraPosUniformLocation = glGetUniformLocation(m_shaderId, "u_cameraPos");
-
-    setupMesh();
 }
 
 void GLMeshRenderable::CleanGLResources()
 {
-    if (m_shaderId && m_ownsShader)
+    if (m_shaderId)
         glDeleteProgram(m_shaderId);
 
     m_shaderId = 0;
@@ -64,15 +84,8 @@ void GLMeshRenderable::NewFrame(float deltaT)
         ImGui::Checkbox("Light Following Camera", &lightFollowingCamera);
         if (ImGui::Button("Reload Shader"))
         {
-            if (m_shaderId)
-                glDeleteProgram(m_shaderId);
-
-            m_shaderId = LoadShader("resources/model.vert", "resources/model.frag");
-            m_persUniformLocation = glGetUniformLocation(m_shaderId, "u_perspective");
-            m_viewUniformLocation = glGetUniformLocation(m_shaderId, "u_view");
-            m_modelUniformLocation = glGetUniformLocation(m_shaderId, "u_model");
-            m_lightPosUniformLocation = glGetUniformLocation(m_shaderId, "u_lightPos");
-            m_cameraPosUniformLocation = glGetUniformLocation(m_shaderId, "u_cameraPos");
+            CleanGLResources();
+            Init();
         }
         ImGui::SameLine();
         if (ImGui::Button("Reset Matrix"))
@@ -98,7 +111,7 @@ void GLMeshRenderable::NewFrame(float deltaT)
     }
     ImGui::End();
 
-    if(lightFollowingCamera)
+    if (lightFollowingCamera)
     {
         m_lightPos = m_camera.GetPosition() - m_camera.GetNormal() * 5.f;
     }
@@ -149,9 +162,4 @@ void GLMeshRenderable::SetPosition(const glm::vec3& worldPos)
 void GLMeshRenderable::Rotate(float degree, const glm::vec3& rotDir)
 {
     m_modelMatrix = glm::rotate(m_modelMatrix, glm::radians(degree), rotDir);
-}
-
-void GLMeshRenderable::setupMesh()
-{
-    m_model = ModelPtr(new Model(m_meshFilename));
 }

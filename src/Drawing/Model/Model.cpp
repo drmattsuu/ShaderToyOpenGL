@@ -14,10 +14,15 @@ Model::Model(const std::string& filePath, bool gammaCorrection /*= false*/)
 {
     m_defaultTexture.id = LoadTextureBMPFile("resources/default.bmp");
     m_defaultTexture.path = "resources/default.bmp";
-    m_defaultTexture.type = "texture_diffuse";
+    m_defaultTexture.type = k_TextureTypeDiffuse;
     m_textures.push_back(m_defaultTexture);
 
     LoadModel(filePath);
+}
+
+Model::~Model()
+{
+    UnloadModel();
 }
 
 void Model::Draw(GLuint shader)
@@ -80,9 +85,9 @@ MeshPtr Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex;
-        glm::vec3
-            vector;  // we declare a placeholder vector since assimp uses its own vector class that doesn't directly
-                     // convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+        // we declare a placeholder vector since assimp uses its own vector class that doesn't directly
+        // convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+        glm::vec3 vector;
         // positions
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
@@ -140,19 +145,19 @@ MeshPtr Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     // normal: texture_normalN
 
     // 1. diffuse maps
-    std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, k_TextureTypeDiffuse);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     // 2. specular maps
-    std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+    std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, k_TextureTypeSpecular);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     // 3. normal maps
-    std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+    std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, k_TextureTypeNormal);
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
     // 4. height maps
-    std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+    std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, k_TextureTypeHeight);
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-    if(textures.empty())
+    if (textures.empty())
     {
         textures.push_back(m_defaultTexture);
     }

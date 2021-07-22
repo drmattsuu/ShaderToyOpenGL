@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GLCamera.h"
-#include "GLInputManager.h"
 #include "GLRenderable.h"
 #include "Model/Model.h"
 
@@ -15,7 +14,7 @@
 class GLMeshRenderable : public GLRenderable
 {
 public:
-    GLMeshRenderable(const GLCamera& camera, const std::string& meshName, const std::string& meshType = ".obj", GLuint shaderId = 0);
+    GLMeshRenderable(const GLCamera& camera, const std::string& meshName, const std::string& meshType = ".obj");
     ~GLMeshRenderable() { CleanGLResources(); }
 
     void Init() override;
@@ -28,11 +27,6 @@ public:
     void Rotate(float degree, const glm::vec3& rotDir);
 
 private:
-    void setupMesh();
-
-private:
-    bool m_ownsShader{false};
-
     GLuint m_shaderId = 0;
 
     GLint m_persUniformLocation = -1;

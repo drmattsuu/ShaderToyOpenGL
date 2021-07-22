@@ -214,6 +214,13 @@ void GLRenderWindow::NewFrame()
     if (ImGui::Begin("##DebugInfoWindow", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
     {
         ImGui::Text("%.3f ms/frame (%.1f FPS)", frameMs, io.Framerate);
+        if (ImGui::Button("Cleanup GL Resources"))
+        {
+            for (auto renderable : m_renderables)
+            {
+                renderable->CleanGLResources();
+            }
+        }
         ImGui::Checkbox("Show ImGui Demo", &g_ShowDemoWindow);
         ImGui::ColorEdit4("Clear Color", m_clearColor);
         ImGui::Checkbox("Cull Backfaces", &g_cullBackfaces);

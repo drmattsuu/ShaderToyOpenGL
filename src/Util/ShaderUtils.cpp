@@ -10,10 +10,26 @@
 #include <string>
 #include <vector>
 
+// Required to ensure STB is implemented
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath)
+namespace
+{
+constexpr char k_UseDefinesToken[] = "//{USE_DEFINES}";
+
+void StringReplace(std::string& in, const std::string& find, const std::string& replace)
+{
+    size_t pos = 0;
+    while((pos = in.find(find, pos)) != std::string::npos)
+    {
+        in.replace(pos, find.length(), replace);
+        pos += replace.length();
+    }
+}
+}  // namespace
+
+GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath, const std::string& defines /*= ""*/)
 {
     std::string vertSrc = LoadFileText(vertPath);
     std::string fragSrc = LoadFileText(fragPath);
@@ -22,6 +38,9 @@ GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath)
         // Failed to get files see terminal for error message.
         return 0;
     }
+    
+    StringReplace(vertSrc, k_UseDefinesToken, defines);
+    StringReplace(fragSrc, k_UseDefinesToken, defines);
 
     GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -191,7 +210,7 @@ GLuint LoadTextureSTB(const std::string& filePath, bool gammaCorrection)
         glBindTexture(GL_TEXTURE_2D, textureId);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

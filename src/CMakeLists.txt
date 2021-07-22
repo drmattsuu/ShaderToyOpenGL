@@ -2,10 +2,13 @@ set (_src_root_path "${CMAKE_SOURCE_DIR}/src")
 
 add_executable(GLShaderToy
     "main.cpp"
+    "Drawing/Model/Mesh.cpp"
+    "Drawing/Model/Model.cpp"
     "Drawing/GLCamera.cpp"
     "Drawing/GLCubeRenderable.cpp"
     "Drawing/GLCubesRenderable.cpp"
     "Drawing/GLInputManager.cpp"
+    "Drawing/GLMeshRenderable.cpp"
     "Drawing/GLRenderable.cpp"
     "Drawing/GLRenderWindow.cpp"
     "Drawing/ImguiImpl.cpp"
@@ -13,7 +16,8 @@ add_executable(GLShaderToy
     "Util/lodepng.cpp"
     "Util/ShaderUtils.cpp"
     "Util/FastDelegate.h"
-    "Util/FastDelegateBind.h" "Drawing/Model/Mesh.cpp" "Drawing/Model/Model.cpp" "Drawing/GLMeshRenderable.cpp")
+    "Util/FastDelegateBind.h"
+)
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem

@@ -13,8 +13,11 @@ class Model
 {
 public:
     Model(const std::string& filePath, bool gammaCorrection = false);
+    ~Model();
 
     void Draw(GLuint shader);
+
+    const std::vector<Texture>& GetLoadedTextures() const { return m_textures; }
 
 private:
     void LoadModel(const std::string& path);

@@ -18,6 +18,11 @@ struct Vertex
     glm::vec3 Bitangent;
 };
 
+constexpr char k_TextureTypeDiffuse[] = "texture_diffuse";
+constexpr char k_TextureTypeSpecular[] = "texture_specular";
+constexpr char k_TextureTypeNormal[] = "texture_normal";
+constexpr char k_TextureTypeHeight[] = "texture_height";
+
 struct Texture
 {
     unsigned int id;
