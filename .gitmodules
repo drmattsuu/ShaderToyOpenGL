@@ -13,10 +13,11 @@
 [submodule "thirdparty/imgui"]
     path = thirdparty/imgui
     url = https://github.com/ocornut/imgui.git
+    branch = v1.82
 [submodule ".\\thirdparty\\assimp"]
     path = .\\thirdparty\\assimp
     url = https://github.com/assimp/assimp.git
-    branch = 8f0c6b04b2257a520aaab38421b2e090204b69df
+    branch = v5.0.1
 [submodule ".\\thirdparty\\stb"]
     path = .\\thirdparty\\stb
     url = git@github.com:nothings/stb.git
