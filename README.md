@@ -1,7 +1,7 @@
 # ShaderToyOpenGL
 
 ## Basic Checkout and Build Process
-###Requirements
+### Requirements
 - CMake v3.15 or newer (https://cmake.org/download/)
 - A compiler that supports C++17
 
