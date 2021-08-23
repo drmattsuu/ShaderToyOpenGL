@@ -6,6 +6,7 @@
 #include "GLInputManager.h"
 #include "GLMeshRenderable.h"
 #include "GLRenderable.h"
+#include "GLShaderToyRenderable.h"
 #include "GLSkyboxRenderable.h"
 
 #include "ImguiImpl.h"
@@ -370,6 +371,8 @@ void GLRenderWindow::RemoveRenderable(GLRenderablePtr renderable)
 void GLRenderWindow::AddAllRenderables()
 {
     m_skybox = GLRenderablePtr(new GLSkyboxRenderable(GetCamera()));
+
+    AddRenderable(GLRenderablePtr(new GLShaderToyRenderable(m_displaySize)));
 
     GLRenderablePtr helloTriangle(new GLHelloTriangle());
     AddRenderable(helloTriangle);

@@ -16,7 +16,7 @@
 
 namespace
 {
-constexpr char k_UseDefinesToken[] = "//{USE_DEFINES}";
+constexpr char kUseDefinesToken[] = "//{USE_DEFINES}";
 
 void StringReplace(std::string& in, const std::string& find, const std::string& replace)
 {
@@ -39,8 +39,8 @@ GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath, 
         return 0;
     }
 
-    StringReplace(vertSrc, k_UseDefinesToken, defines);
-    StringReplace(fragSrc, k_UseDefinesToken, defines);
+    StringReplace(vertSrc, kUseDefinesToken, defines);
+    StringReplace(fragSrc, kUseDefinesToken, defines);
 
     GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
