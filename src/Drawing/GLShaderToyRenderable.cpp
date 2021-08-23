@@ -97,6 +97,50 @@ void GLShaderToyRenderable::CleanGLResources()
 
 void GLShaderToyRenderable::NewFrame(float deltaT)
 {
+    m_deltaTime = 0.0f;
+    if (!m_paused)
+    {
+        m_frame++;
+        m_deltaTime = (deltaT * 0.001f);
+        m_runTime += (deltaT * 0.001f);
+    }
+
+    if (ImGui::Begin("ShaderToy"))
+    {
+        if (ImGui::Button("Reset"))
+        {
+            ResetTime();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Reload Shaders"))
+        {
+            ClearShaders();
+            LocateShaders();
+            ResetTime();
+        }
+
+
+        const char* pauseText = m_paused ? "Resume" : "Pause";
+        if(ImGui::Button(pauseText))
+        {
+            m_paused = !m_paused;
+        }
+
+        for (int i = 0; i < m_shaders.size(); ++i)
+        {
+            const ShaderToyShader& shader = m_shaders[i];
+            fs::path shaderToyPath(shader.FilePath);
+
+            std::string name = shaderToyPath.filename().string();
+
+            if (ImGui::RadioButton(name.c_str(), &m_currentShader, i))
+            {
+                ResetTime();
+            }
+        }
+    }
+    ImGui::End();
+
     if (m_quadVertexArrayObject == 0 || m_quadVertexBufferObject == 0)
         Init();
 
@@ -106,28 +150,6 @@ void GLShaderToyRenderable::NewFrame(float deltaT)
     {
         currentShader.ShaderId = ConstructShaderToyShader(currentShader.FilePath);
     }
-
-    m_deltaTime = 0.0f;
-    if (!paused)
-    {
-        m_frame++;
-        m_deltaTime = (deltaT * 0.001f);
-        m_runTime += (deltaT * 0.001f);
-    }
-
-    if(ImGui::Begin("ShaderToy"))
-    {
-        for(int i = 0; i < m_shaders.size(); ++i)
-        {
-            const ShaderToyShader& shader = m_shaders[i];
-            fs::path shaderToyPath(shader.FilePath);
-
-            std::string name = shaderToyPath.filename().string();
-
-            ImGui::RadioButton(name.c_str(), &m_currentShader, i);
-        }
-    }
-    ImGui::End();
 }
 
 void GLShaderToyRenderable::Render()
@@ -193,7 +215,7 @@ void GLShaderToyRenderable::ClearShaders()
     for (const ShaderToyShader& shader : m_shaders)
     {
         if (shader.ShaderId != 0)
-            glDeleteShader(shader.ShaderId);
+            glDeleteProgram(shader.ShaderId);
     }
 
     m_shaders.clear();
@@ -228,4 +250,10 @@ void GLShaderToyRenderable::LocateShaders()
         ShaderToyShader newShader = {currentFile.string()};
         m_shaders.push_back(newShader);
     }
+}
+
+void GLShaderToyRenderable::ResetTime()
+{
+    m_frame = 0;
+    m_runTime = 0.0f;
 }

@@ -28,6 +28,7 @@ private:
 
     void ClearShaders();
     void LocateShaders();
+    void ResetTime();
 
 private:
     int m_frame = 0;
@@ -36,7 +37,7 @@ private:
 
     const int* m_displaySize;
 
-    bool paused = false;
+    bool m_paused = false;
 
     int m_currentShader = 0;
     std::vector<ShaderToyShader> m_shaders;

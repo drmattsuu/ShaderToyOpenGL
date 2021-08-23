@@ -87,7 +87,7 @@ void GLFrameBuffersRenderable::Init()
 void GLFrameBuffersRenderable::CleanGLResources()
 {
     if (m_quadShaderId)
-        glDeleteShader(m_quadShaderId);
+        glDeleteProgram(m_quadShaderId);
 
     if (m_quadVertexBufferObject)
         glDeleteBuffers(1, &m_quadVertexBufferObject);
