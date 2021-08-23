@@ -7,17 +7,19 @@ add_executable(GLShaderToy
     "Drawing/GLCamera.cpp"
     "Drawing/GLCubeRenderable.cpp"
     "Drawing/GLCubesRenderable.cpp"
+    "Drawing/GLFrameBuffersRenderable.cpp"
     "Drawing/GLInputManager.cpp"
     "Drawing/GLMeshRenderable.cpp"
     "Drawing/GLRenderable.cpp"
     "Drawing/GLRenderWindow.cpp"
+    "Drawing/GLShaderToyRenderable.cpp"
+    "Drawing/GLSkyboxRenderable.cpp"
     "Drawing/ImguiImpl.cpp"
     "Util/FileUtils.cpp"
     "Util/lodepng.cpp"
     "Util/ShaderUtils.cpp"
     "Util/FastDelegate.h"
-    "Util/FastDelegateBind.h"
-)
+    "Util/FastDelegateBind.h")
 
 target_link_libraries(GLShaderToy
     PUBLIC Boost::filesystem

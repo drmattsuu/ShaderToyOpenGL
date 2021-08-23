@@ -33,6 +33,7 @@ public:
 
 private:
     bool m_contextCreated = false;
+    bool m_renderSkybox = false;
     int m_displaySize[2] = {1280, 720};
     int m_prevDisplaySize[2] = {1280, 720};
     int m_activeDemo = 0;
@@ -41,6 +42,7 @@ private:
     GLclampf m_clearColor[4] = {0.45f, 0.55f, 0.60f, 1.00f};
 
     std::vector<GLRenderablePtr> m_renderables;
+    GLRenderablePtr m_skybox;
 
     GLCamera m_camera;
 };

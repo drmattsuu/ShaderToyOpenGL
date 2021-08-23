@@ -2,9 +2,11 @@
 
 #include "GLCubeRenderable.h"
 #include "GLCubesRenderable.h"
+#include "GLFrameBuffersRenderable.h"
 #include "GLInputManager.h"
 #include "GLMeshRenderable.h"
 #include "GLRenderable.h"
+#include "GLSkyboxRenderable.h"
 
 #include "ImguiImpl.h"
 #include "imgui.h"
@@ -199,6 +201,7 @@ bool GLRenderWindow::GetShouldClose()
 
 void GLRenderWindow::NewFrame()
 {
+    m_renderSkybox = false;
     glfwPollEvents();
 
     GLGui::NewFrame();
@@ -285,8 +288,14 @@ void GLRenderWindow::NewFrame()
     for (auto renderable : m_renderables)
     {
         if (renderable->ShouldRender())
+        {
+            m_renderSkybox = renderable->ShouldDrawSkybox() || m_renderSkybox;
             renderable->NewFrame(frameMs);
+        }
     }
+
+    if (m_renderSkybox)
+        m_skybox->NewFrame(frameMs);
 
     if (m_prevDisplaySize[0] != m_displaySize[0] || m_prevDisplaySize[1] != m_displaySize[1])
     {
@@ -306,13 +315,18 @@ void GLRenderWindow::Render()
     glfwGetFramebufferSize(m_window, &m_displaySize[0], &m_displaySize[1]);
     glViewport(0, 0, m_displaySize[0], m_displaySize[1]);
     glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     bool cullingBackfaces = glIsEnabled(GL_CULL_FACE);
     if (g_cullBackfaces)
     {
         glEnable(GL_CULL_FACE);
         glCullFace(g_cullMode);
+    }
+
+    if (m_renderSkybox)
+    {
+        m_skybox->Render();
     }
 
     // Call Render functions
@@ -355,6 +369,8 @@ void GLRenderWindow::RemoveRenderable(GLRenderablePtr renderable)
 
 void GLRenderWindow::AddAllRenderables()
 {
+    m_skybox = GLRenderablePtr(new GLSkyboxRenderable(GetCamera()));
+
     GLRenderablePtr helloTriangle(new GLHelloTriangle());
     AddRenderable(helloTriangle);
 
@@ -366,6 +382,8 @@ void GLRenderWindow::AddAllRenderables()
 
     GLRenderablePtr cubes(new GLCubesRenderable(GetCamera()));
     AddRenderable(cubes);
+
+    AddRenderable(GLRenderablePtr(new GLFrameBuffersRenderable(GetCamera(), m_displaySize)));
 
     AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "Monkey")));
 

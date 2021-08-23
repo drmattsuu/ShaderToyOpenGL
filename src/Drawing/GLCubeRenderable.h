@@ -21,6 +21,8 @@ public:
     void NewFrame(float deltaT) override;
     void Render() override;
 
+    bool ShouldDrawSkybox() const override { return true; }
+
     bool HandleKeyEvent(EventPtr event);
 
     void TranslateWorld(const glm::vec3& by);

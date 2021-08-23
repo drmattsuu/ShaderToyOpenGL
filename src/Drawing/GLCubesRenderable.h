@@ -4,8 +4,8 @@
 #include "GLCubeRenderable.h"
 #include "GLRenderable.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 class GLCubesRenderable : public GLRenderable
 {
@@ -18,6 +18,8 @@ public:
 
     void NewFrame(float deltaT) override;
     void Render() override;
+
+    bool ShouldDrawSkybox() const override { return true; }
 
 private:
     const GLCamera& m_camera;

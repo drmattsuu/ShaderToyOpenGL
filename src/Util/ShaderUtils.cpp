@@ -21,7 +21,7 @@ constexpr char k_UseDefinesToken[] = "//{USE_DEFINES}";
 void StringReplace(std::string& in, const std::string& find, const std::string& replace)
 {
     size_t pos = 0;
-    while((pos = in.find(find, pos)) != std::string::npos)
+    while ((pos = in.find(find, pos)) != std::string::npos)
     {
         in.replace(pos, find.length(), replace);
         pos += replace.length();
@@ -38,7 +38,7 @@ GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath, 
         // Failed to get files see terminal for error message.
         return 0;
     }
-    
+
     StringReplace(vertSrc, k_UseDefinesToken, defines);
     StringReplace(fragSrc, k_UseDefinesToken, defines);
 
@@ -224,4 +224,49 @@ GLuint LoadTextureSTB(const std::string& filePath, bool gammaCorrection)
     }
 
     return textureId;
+}
+
+GLuint LoadCubeMapSTB(std::vector<std::string> faces)
+{
+    if (faces.size() != 6)
+    {
+        std::cout << "Attribute Error: LoadCubeMap expected 6 faces, got " << faces.size() << std::endl;
+        return 0;
+    }
+
+    GLuint texId = 0;
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texId);
+
+    int width, height, nComponents;
+    for (unsigned int i = 0; i < faces.size(); ++i)
+    {
+        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nComponents, 0);
+        if (data)
+        {
+            GLenum format;
+            if (nComponents == 1)
+                format = GL_RED;
+            else if (nComponents == 3)
+                format = GL_RGB;
+            else if (nComponents == 4)
+                format = GL_RGBA;
+            else
+                format = GL_BLUE;  // something blindingly obvious has gone wrong.
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE,
+                         data);
+        }
+        else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+        }
+        stbi_image_free(data);
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return texId;
 }

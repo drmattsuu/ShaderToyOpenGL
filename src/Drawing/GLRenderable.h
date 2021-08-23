@@ -20,11 +20,12 @@ public:
     virtual void NewFrame(float deltaT) = 0;
     virtual void Render() = 0;
 
-    bool ShouldRender() { return m_renderEnabled; }
-    bool ShouldLoadImmediately() { return false; };
+    virtual bool ShouldDrawSkybox() const { return false; }
+    virtual bool ShouldLoadImmediately() const { return false; };
+    bool ShouldRender() const { return m_renderEnabled; }
     void SetShouldRender(bool shouldRender) { m_renderEnabled = shouldRender; }
 
-    const std::string& GetName() { return m_name; }
+    const std::string& GetName() const { return m_name; }
 
 protected:
     EventDelegatePtr SubscribeEvent(EventType e);

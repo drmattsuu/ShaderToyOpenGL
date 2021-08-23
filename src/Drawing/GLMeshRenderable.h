@@ -26,6 +26,8 @@ public:
     void SetPosition(const glm::vec3& worldPos);
     void Rotate(float degree, const glm::vec3& rotDir);
 
+    bool ShouldDrawSkybox() const override { return true; }
+
 private:
     GLuint m_shaderId = 0;
 
