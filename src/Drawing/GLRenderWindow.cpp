@@ -9,6 +9,7 @@
 #include "GLRenderable.h"
 #include "GLShaderToyRenderable.h"
 #include "GLSkyboxRenderable.h"
+#include "GLBezierCurve.h"
 
 #include "ImguiImpl.h"
 #include "imgui.h"
@@ -371,9 +372,11 @@ void GLRenderWindow::RemoveRenderable(GLRenderablePtr renderable)
 
 void GLRenderWindow::AddAllRenderables()
 {
-    m_skybox = GLRenderablePtr(new GLSkyboxRenderable(GetCamera()));
+    m_skybox = GLRenderablePtr(std::make_shared<GLSkyboxRenderable>(GetCamera()));
 
-    AddRenderable(GLRenderablePtr(new GLShaderToyRenderable(m_displaySize)));
+    AddRenderable(std::make_shared<GLShaderToyRenderable>(m_displaySize));
+
+    AddRenderable(std::make_shared<GLBezierCurve>(m_displaySize));
 
     GLRenderablePtr helloTriangle(new GLHelloTriangle());
     AddRenderable(helloTriangle);

@@ -4,6 +4,7 @@ add_executable(GLShaderToy
     "main.cpp"
     "Drawing/Model/Mesh.cpp"
     "Drawing/Model/Model.cpp"
+    "Drawing/GLBezierCurve.cpp"
     "Drawing/GLCamera.cpp"
     "Drawing/GLCubeRenderable.cpp"
     "Drawing/GLCubesRenderable.cpp"

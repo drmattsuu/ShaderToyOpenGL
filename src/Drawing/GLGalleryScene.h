@@ -22,6 +22,8 @@ public:
     void NewFrame(float deltaT) override;
     void Render() override;
 
+    bool ShouldLoadImmediately() const override { return true; };
+
 private:
     GLCubeRenderablePtr m_cube;
     GLFrameBuffersRenderablePtr m_frameBuffer;
