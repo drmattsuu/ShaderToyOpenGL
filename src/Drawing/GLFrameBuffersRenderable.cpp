@@ -46,8 +46,8 @@ GLFrameBuffersRenderable::GLFrameBuffersRenderable(const GLCamera& camera, const
 
 void GLFrameBuffersRenderable::Init()
 {
-    m_skybox->Init();
-    m_scene->Init();
+    //m_skybox->Init();
+    //m_scene->Init();
 
     glGenFramebuffers(1, &m_frameBufferObject);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferObject);
@@ -137,11 +137,7 @@ void GLFrameBuffersRenderable::Render()
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
 
-    // m_scene->Render();
-
-    glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferObject);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    StartFrameBufferRender();
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -152,7 +148,7 @@ void GLFrameBuffersRenderable::Render()
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    EndFrameBufferRender();
 
     glDisable(GL_DEPTH_TEST);
 
@@ -171,4 +167,18 @@ void GLFrameBuffersRenderable::Render()
         glEnable(GL_DEPTH_TEST);
     else
         glDisable(GL_DEPTH_TEST);
+}
+
+void GLFrameBuffersRenderable::StartFrameBufferRender()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferObject);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+void GLFrameBuffersRenderable::EndFrameBufferRender()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindVertexArray(0);
+    glUseProgram(0);
 }
