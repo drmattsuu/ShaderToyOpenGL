@@ -260,13 +260,15 @@ void GLCubeRenderable::CleanGLResources()
     if (m_shaderId)
         glDeleteProgram(m_shaderId);
     if (m_textureId && m_ownsTexture)
+    {
         glDeleteTextures(1, &m_textureId);
+        m_textureId = 0;
+    }
 
     m_vertexBufferId = 0;
     m_uvBufferId = 0;
     m_vertexArrayId = 0;
     m_shaderId = 0;
-    m_textureId = 0;
 }
 
 void GLCubeRenderable::NewFrame(float deltaT)
