@@ -4,6 +4,7 @@
 ### Requirements
 - CMake v3.15 or newer (https://cmake.org/download/)
 - A compiler that supports C++17
+- Boost 17.0 commpied for msvc141 in `/thirdparty/boost_1_70_0`
 
 ### Third-party Libraries
 From the root of this repo run the following commands to fetch third-party dependencies;
