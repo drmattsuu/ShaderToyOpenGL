@@ -21,14 +21,14 @@ public:
     void Render() override;
 
 private:
-    float m_thickness = 8.f;
+    float m_thickness = 20.f;
 
      GLuint m_nPoints = 4;
     // clang-format off
      std::vector<GLfloat> m_controlPoints = {
          0.9f,  0.9f,
-         0.7f,  0.9f,
-        -0.7f, -0.9f,
+         0.0f,  0.9f,
+         0.0f, -0.9f,
         -0.9f, -0.9f,
     };
      std::vector<GLfloat> m_colorPoints = {
