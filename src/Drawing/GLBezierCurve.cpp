@@ -17,7 +17,7 @@ GLBezierCurve::GLBezierCurve(const int* displaySize) : GLRenderable("Bezier"), m
 void GLBezierCurve::Init()
 {
     m_shaderId = LoadGeomShaderFile("resources/shaders/bezier.vert", "resources/shaders/bezier.frag",
-                                    "resources/shaders/bezier.geom");
+                                    "resources/shaders/bezier2.geom");
 
     glGenVertexArrays(1, &m_vertexArrayId);
     glBindVertexArray(m_vertexArrayId);
