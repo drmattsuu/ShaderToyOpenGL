@@ -1,7 +1,6 @@
 #version 430 core
 
 in VertexData{
-//    vec2 mTexCoord;
     vec4 fColor;
 } VertexIn;
 

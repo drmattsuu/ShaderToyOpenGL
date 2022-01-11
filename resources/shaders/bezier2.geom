@@ -1,7 +1,7 @@
 #version 430 core
 
 /*
- * Based on work by the excellent Victoria Rudakova lincensed under MIT
+ * Based on work by the Victoria Rudakova lincensed under MIT
  * https://github.com/vicrucann/shader-3dcurve/
  */
 
@@ -9,9 +9,9 @@ layout (location = 0) uniform float Thickness;
 layout (location = 1) uniform vec2 Viewport;
 
 layout (location = 2) uniform float MiterLimit = 0.1;
-layout (location = 3) uniform int Segments = 30;
+layout (location = 3) uniform int Segments = 32;
 
-const int SegmentsMax = 16; // max_vertices = (SegmentsMax+1)*4;
+const int SegmentsMax = 32; // max_vertices = (SegmentsMax+1)*4;
 const int SegmentsMin = 3; // min number of segments per curve
 
 in VertexData{
@@ -44,19 +44,19 @@ vec4 toBezier(float delta, int i, vec4 P0, vec4 P1, vec4 P2, vec4 P3)
     return (P0 * one_minus_t2 * one_minus_t + P1 * 3.0 * t * one_minus_t2 + P2 * 3.0 * t2 * one_minus_t + P3 * t2 * t);
 }
 
-void drawSegment(vec2 points[4], vec4 colors[4], float zValues[4]/*, vec4 V[4]*/)
+void drawSegment(vec2 points[4], vec4 colors[4], float zValues[4])
 {
     vec2 p0 = points[0];
     vec2 p1 = points[1];
     vec2 p2 = points[2];
     vec2 p3 = points[3];
 
-    /* perform naive culling */
-    vec2 area = Viewport * 4;
-    if( p1.x < -area.x || p1.x > area.x ) return;
-    if( p1.y < -area.y || p1.y > area.y ) return;
-    if( p2.x < -area.x || p2.x > area.x ) return;
-    if( p2.y < -area.y || p2.y > area.y ) return;
+    ///* perform naive culling */
+    //vec2 area = Viewport * 4;
+    //if( p1.x < -area.x || p1.x > area.x ) return;
+    //if( p1.y < -area.y || p1.y > area.y ) return;
+    //if( p2.x < -area.x || p2.x > area.x ) return;
+    //if( p2.y < -area.y || p2.y > area.y ) return;
 
     /* determine the direction of each of the 3 segments (previous, current, next) */
     vec2 v0 = normalize( p1 - p0 );
@@ -86,75 +86,57 @@ void drawSegment(vec2 points[4], vec4 colors[4], float zValues[4]/*, vec4 V[4]*/
         length_a = Thickness;
 
         /* close the gap */
-        if( dot( v0, n1 ) > 0 ) {
-            // VertexOut.mTexCoord = vec2( 0, 0 );
+        if(dot( v0, n1 ) > 0) {
             VertexOut.fColor = colors[1];
-            // VertexOut.mVertex = V[1];
-            gl_Position = vec4( ( p1 + Thickness * n0 ) / Viewport, zValues[1], 1.0 );
+            gl_Position = vec4((p1 + Thickness * n0) / Viewport, zValues[1], 1.0);
             EmitVertex();
 
-            // VertexOut.mTexCoord = vec2( 0, 0 );
             VertexOut.fColor = colors[1];
-            // VertexOut.mVertex = V[1];
-            gl_Position = vec4( ( p1 + Thickness * n1 ) / Viewport, zValues[1], 1.0 );
+            gl_Position = vec4((p1 + Thickness * n1 ) / Viewport, zValues[1], 1.0);
             EmitVertex();
 
-            // VertexOut.mTexCoord = vec2( 0, 0.5 );
             VertexOut.fColor = colors[1];
-            // VertexOut.mVertex = V[1];
-            gl_Position = vec4( p1 / Viewport, 0.0, 1.0 );
+            gl_Position = vec4(p1 / Viewport, 0.0, 1.0);
             EmitVertex();
 
             EndPrimitive();
         }
-        else {
-            // VertexOut.mTexCoord = vec2( 0, 1 );
+        else
+        {
             VertexOut.fColor = colors[1];
-            // VertexOut.mVertex = V[1];
-            gl_Position = vec4( ( p1 - Thickness * n1 ) / Viewport, zValues[1], 1.0 );
+            gl_Position = vec4((p1 - Thickness * n1) / Viewport, zValues[1], 1.0);
             EmitVertex();
 
-            // VertexOut.mTexCoord = vec2( 0, 1 );
             VertexOut.fColor = colors[1];
-            // VertexOut.mVertex = V[1];
-            gl_Position = vec4( ( p1 - Thickness * n0 ) / Viewport, zValues[1], 1.0 );
+            gl_Position = vec4((p1 - Thickness * n0) / Viewport, zValues[1], 1.0);
             EmitVertex();
 
-            // VertexOut.mTexCoord = vec2( 0, 0.5 );
             VertexOut.fColor = colors[1];
-            // VertexOut.mVertex = V[1];
-            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );
+            gl_Position = vec4(p1 / Viewport, zValues[1], 1.0);
             EmitVertex();
 
             EndPrimitive();
         }
     }
+
     if( dot( v1, v2 ) < -MiterLimit ) {
         miter_b = n1;
         length_b = Thickness;
     }
     // generate the triangle strip
-    // VertexOut.mTexCoord = vec2( 0, 0 );
     VertexOut.fColor = colors[1];
-    // VertexOut.mVertex = V[1];
     gl_Position = vec4( ( p1 + length_a * miter_a ) / Viewport, zValues[1], 1.0 );
     EmitVertex();
 
-    // VertexOut.mTexCoord = vec2( 0, 1 );
     VertexOut.fColor = colors[1];
-    // VertexOut.mVertex = V[1];
     gl_Position = vec4( ( p1 - length_a * miter_a ) / Viewport, zValues[1], 1.0 );
     EmitVertex();
 
-    // VertexOut.mTexCoord = vec2( 0, 0 );
     VertexOut.fColor = colors[2];
-    // VertexOut.mVertex = V[2];
     gl_Position = vec4( ( p2 + length_b * miter_b ) / Viewport, zValues[2], 1.0 );
     EmitVertex();
 
-    // VertexOut.mTexCoord = vec2( 0, 1 );
     VertexOut.fColor = colors[2];
-    // VertexOut.mVertex = V[2];
     gl_Position = vec4( ( p2 - length_b * miter_b ) / Viewport, zValues[2], 1.0 );
     EmitVertex();
 
@@ -183,11 +165,12 @@ void main(void)
 
     /* use the points to build a bezier line */
     float delta = 1.0 / float(nSegments);
-    vec4 Points[4]; // segments of curve in 3d
-    vec4 colors[4]; // interpolated colors
+    vec4 Points[4] = vec4[](vec4(0.0),vec4(0.0),vec4(0.0),vec4(0.0)); // segments of curve in 3d
+    vec4 colors[4] = vec4[](vec4(0.0),vec4(0.0),vec4(0.0),vec4(0.0)); // interpolated colors
     float zValues[4];
     int j = 0; // bezier segment index for color interpolation
     for (int i=0; i<=nSegments; ++i){
+        // todo : reduce down these if statements
         /* first point */
         if (i==0){
             Points[1] = toBezier(delta, i, B[0], B[1], B[2], B[3]);
@@ -195,12 +178,17 @@ void main(void)
             Points[3] = toBezier(delta, i+2, B[0], B[1], B[2], B[3]);
             vec4 dir = normalize(Points[1] - Points[2]);
             Points[0] = Points[1] + dir * 0.01;
+            /* color interpolation: No color interpolation for the first point*/
+            colors[1] = C[0];
         }
         else if (i < nSegments-1){
             Points[0] = Points[1];
             Points[1] = Points[2];
             Points[2] = Points[3];
             Points[3] = toBezier(delta, i+2, B[0], B[1], B[2], B[3]);
+            /* color interpolation: define which bezier segment the point belongs to and then interpolate
+            between the two colors of that segment */
+            colors[1] = colors[2];
         }
         /* last point */
         else {
@@ -209,12 +197,11 @@ void main(void)
             Points[2] = Points[3];
             vec4 dir = normalize(Points[2] - Points[1]);
             Points[3] = Points[2] + dir * 0.01;
+            /* color interpolation: define which bezier segment the point belongs to and then interpolate
+            between the two colors of that segment */
+            colors[1] = colors[2];
         }
 
-        /* color interpolation: define which bezier segment the point belongs to and then interpolate
-          between the two colors of that segment */
-        if (i==0) colors[1] = C[0];
-        else colors[1] = colors[2];
         /* fraction p{i} is located between fraction p{j} and p{j+1} */
         float pi = float(i+1) / float(nSegments);
         if (pi >= float(j+1)/3.f) j++;
