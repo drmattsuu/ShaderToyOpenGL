@@ -146,6 +146,8 @@ GLint LinkShader(GLuint programId, GLuint vertShaderId, GLuint fragShaderId, GLu
 
     glDetachShader(programId, vertShaderId);
     glDetachShader(programId, fragShaderId);
+    if (geomShaderId)
+        glDetachShader(programId, geomShaderId);
 
     return result;
 }
