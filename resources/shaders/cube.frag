@@ -1,4 +1,4 @@
-#version 430
+#version 450
 
 // Interpolated values from the vertex shaders
 in vec2 frag_uv;

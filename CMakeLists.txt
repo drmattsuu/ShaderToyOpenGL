@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.15)
+cmake_minimum_required (VERSION 3.14)
 project (GLShaderToy VERSION 0.0.1)
 
 find_package(OpenGL REQUIRED)
@@ -43,9 +43,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 
-#if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     add_definitions(-DTOY_WORKING_DIR=\"${CMAKE_SOURCE_DIR}\")
-#endif ()
+endif ()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/boost_1_70_0")
     if(NOT DEFINED FETCHCONTENT_SOURCE_DIR_BOOST)

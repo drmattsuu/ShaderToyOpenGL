@@ -57,6 +57,48 @@ GLuint LoadShaderFile(const std::string& vertPath, const std::string& fragPath, 
     return programId;
 }
 
+GLuint LoadGeomShaderFile(const std::string& vertPath, const std::string& fragPath, const std::string& geomPath,
+                          const std::string& defines /*= ""*/)
+{
+    std::string vertSrc = LoadFileText(vertPath);
+    std::string fragSrc = LoadFileText(fragPath);
+    std::string geomSrc = LoadFileText(geomPath);
+    if (vertSrc.empty() || fragSrc.empty())
+    {
+        // Failed to get files see terminal for error message.
+        return 0;
+    }
+
+    StringReplace(vertSrc, kUseDefinesToken, defines);
+    StringReplace(fragSrc, kUseDefinesToken, defines);
+    StringReplace(geomSrc, kUseDefinesToken, defines);
+
+    GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint geomShaderId = 0;
+    if (!geomSrc.empty())
+    {
+        geomShaderId = glCreateShader(GL_GEOMETRY_SHADER);
+    }
+
+    CompileShaderSrc(vertShaderId, vertSrc);
+    CompileShaderSrc(fragShaderId, fragSrc);
+    if (geomShaderId)
+    {
+        CompileShaderSrc(geomShaderId, geomSrc);
+    }
+
+    GLuint programId = glCreateProgram();
+    LinkShader(programId, vertShaderId, fragShaderId, geomShaderId);
+
+    glDeleteShader(vertShaderId);
+    glDeleteShader(fragShaderId);
+    if (geomShaderId)
+        glDeleteShader(geomShaderId);
+
+    return programId;
+}
+
 GLint CompileShaderSrc(GLuint shaderId, const std::string& shaderSrc)
 {
     GLint result = GL_FALSE;
@@ -80,10 +122,12 @@ GLint CompileShaderSrc(GLuint shaderId, const std::string& shaderSrc)
     return result;
 }
 
-GLint LinkShader(GLuint programId, GLuint vertShaderId, GLuint fragShaderId)
+GLint LinkShader(GLuint programId, GLuint vertShaderId, GLuint fragShaderId, GLuint geomShaderId /*= 0*/)
 {
     glAttachShader(programId, vertShaderId);
     glAttachShader(programId, fragShaderId);
+    if (geomShaderId)
+        glAttachShader(programId, geomShaderId);
     glLinkProgram(programId);
 
     GLint result = GL_FALSE;
@@ -102,6 +146,8 @@ GLint LinkShader(GLuint programId, GLuint vertShaderId, GLuint fragShaderId)
 
     glDetachShader(programId, vertShaderId);
     glDetachShader(programId, fragShaderId);
+    if (geomShaderId)
+        glDetachShader(programId, geomShaderId);
 
     return result;
 }
