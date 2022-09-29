@@ -105,7 +105,8 @@ void GLShaderToyRenderable::NewFrame(float deltaT)
         m_runTime += (deltaT * 0.001f);
     }
 
-    if (ImGui::Begin("ShaderToy"))
+    ImGui::SetNextWindowPos(ImVec2(300.f, 10.f), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin("ShaderToy", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         if (ImGui::Button("Reset"))
         {
@@ -118,7 +119,6 @@ void GLShaderToyRenderable::NewFrame(float deltaT)
             LocateShaders();
             ResetTime();
         }
-
 
         const char* pauseText = m_paused ? "Resume" : "Pause";
         if(ImGui::Button(pauseText))

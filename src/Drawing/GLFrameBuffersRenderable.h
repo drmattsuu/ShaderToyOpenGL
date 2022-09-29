@@ -3,6 +3,8 @@
 #include "GLCamera.h"
 #include "GLRenderable.h"
 
+#include <memory>
+
 class GLFrameBuffersRenderable : public GLRenderable
 {
 public:
@@ -17,6 +19,11 @@ public:
 
     bool ShouldDrawSkybox() const override { return false; }
 
+    void StartFrameBufferRender();
+    void EndFrameBufferRender();
+
+    GLuint GetTextureColorBuffer() { return m_textureColorBuffer; }
+
 private:
     GLuint m_frameBufferObject = 0;
     GLuint m_renderBufferObject = 0;
@@ -27,7 +34,7 @@ private:
     GLuint m_quadShaderId = 0;
 
     GLint m_screenTextureSamplerLocation = -1;
-    
+
     GLRenderablePtr m_scene;
     GLRenderablePtr m_skybox;
 
@@ -35,3 +42,5 @@ private:
     const GLCamera& m_camera;
     const int* m_displaySize;
 };
+
+using GLFrameBuffersRenderablePtr = std::shared_ptr<GLFrameBuffersRenderable>;

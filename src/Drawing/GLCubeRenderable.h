@@ -12,7 +12,7 @@
 class GLCubeRenderable : public GLRenderable
 {
 public:
-    GLCubeRenderable(const GLCamera& camera);
+    GLCubeRenderable(const GLCamera& camera, GLuint textureId = 0);
     ~GLCubeRenderable() { CleanGLResources(); }
 
     void Init() override;
@@ -50,6 +50,7 @@ private:
     const GLCamera& m_camera;
 
     bool m_arrows[4]{false, false, false, false};
+    bool m_ownsTexture{false};
 };
 
 using GLCubeRenderablePtr = std::shared_ptr<GLCubeRenderable>;

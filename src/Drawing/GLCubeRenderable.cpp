@@ -23,36 +23,47 @@ static const std::vector<GLfloat> g_vBufData = {
     -1.0f,-1.0f,-1.0f,
     -1.0f,-1.0f, 1.0f,
     -1.0f, 1.0f, 1.0f,
+
      1.0f, 1.0f,-1.0f,
     -1.0f,-1.0f,-1.0f,
     -1.0f, 1.0f,-1.0f,
+
      1.0f,-1.0f, 1.0f,
     -1.0f,-1.0f,-1.0f,
      1.0f,-1.0f,-1.0f,
+
      1.0f, 1.0f,-1.0f,
      1.0f,-1.0f,-1.0f,
     -1.0f,-1.0f,-1.0f,
+
     -1.0f,-1.0f,-1.0f,
     -1.0f, 1.0f, 1.0f,
     -1.0f, 1.0f,-1.0f,
+
      1.0f,-1.0f, 1.0f,
     -1.0f,-1.0f, 1.0f,
     -1.0f,-1.0f,-1.0f,
+
     -1.0f, 1.0f, 1.0f,
     -1.0f,-1.0f, 1.0f,
      1.0f,-1.0f, 1.0f,
+
      1.0f, 1.0f, 1.0f,
      1.0f,-1.0f,-1.0f,
      1.0f, 1.0f,-1.0f,
+
      1.0f,-1.0f,-1.0f,
      1.0f, 1.0f, 1.0f,
      1.0f,-1.0f, 1.0f,
+
      1.0f, 1.0f, 1.0f,
      1.0f, 1.0f,-1.0f,
     -1.0f, 1.0f,-1.0f,
+
      1.0f, 1.0f, 1.0f,
     -1.0f, 1.0f,-1.0f,
     -1.0f, 1.0f, 1.0f,
+
      1.0f, 1.0f, 1.0f,
     -1.0f, 1.0f, 1.0f,
      1.0f,-1.0f, 1.0f
@@ -137,14 +148,64 @@ static const std::vector<GLfloat> g_uvBufDataPng = {
     1.000004f, 0.671847f, 
     0.667979f, 0.335851f
 };
+
+static const std::vector<GLfloat> g_uvBufDataFlat = { 
+    0.0f, 0.0f,
+    0.0f, 1.0f,
+    1.0f, 1.0f,
+
+    1.0f, 1.0f,
+    0.0f, 0.0f,
+    0.0f, 1.0f,
+
+    1.0f, 1.0f,
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+
+    1.0f, 1.0f,
+    1.0f, 0.0f,
+    0.0f, 0.0f,
+
+    0.0f, 0.0f,
+    1.0f, 1.0f,
+    1.0f, 0.0f,
+
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    0.0f, 0.0f,
+
+    0.0f, 1.0f,
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+
+    1.0f, 1.0f,
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+
+    0.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+
+    1.0f, 1.0f,
+    1.0f, 0.0f,
+    0.0f, 0.0f,
+
+    1.0f, 1.0f,
+    0.0f, 0.0f,
+    0.0f, 1.0f,
+
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    1.0f, 0.0f
+};
 // clang-format on
 
 }  // namespace
 
 static int sCubeNo = 0;
 
-GLCubeRenderable::GLCubeRenderable(const GLCamera& camera)
-    : GLRenderable("Cube" + std::to_string(sCubeNo++)), m_camera(camera), m_model(1.f)
+GLCubeRenderable::GLCubeRenderable(const GLCamera& camera, GLuint textureId)
+    : GLRenderable("Cube" + std::to_string(sCubeNo++)), m_camera(camera), m_model(1.f), m_textureId(textureId)
 {
 }
 
@@ -164,17 +225,25 @@ void GLCubeRenderable::Init()
     glBufferData(GL_ARRAY_BUFFER, g_vBufData.size() * sizeof(GLfloat), &g_vBufData[0], GL_STATIC_DRAW);
     glGenBuffers(1, &m_uvBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_uvBufferId);
-    // if using png comment this line and invert the UV buffer
-    static const bool loadBMP = false;
-    if (loadBMP)
+    if (m_textureId)
     {
-        glBufferData(GL_ARRAY_BUFFER, g_uvBufData.size() * sizeof(GLfloat), &g_uvBufData[0], GL_STATIC_DRAW);
-        m_textureId = LoadTextureBMPFile("resources/cube2.bmp");
+        glBufferData(GL_ARRAY_BUFFER, g_uvBufDataFlat.size() * sizeof(GLfloat), &g_uvBufDataFlat[0], GL_STATIC_DRAW);
     }
     else
     {
-        glBufferData(GL_ARRAY_BUFFER, g_uvBufDataPng.size() * sizeof(GLfloat), &g_uvBufDataPng[0], GL_STATIC_DRAW);
-        m_textureId = LoadTexturePNGFile("resources/cube.png");
+        static const bool loadBMP = false;
+        if (loadBMP)
+        {
+            glBufferData(GL_ARRAY_BUFFER, g_uvBufData.size() * sizeof(GLfloat), &g_uvBufData[0], GL_STATIC_DRAW);
+            m_textureId = LoadTextureBMPFile("resources/cube2.bmp");
+            m_ownsTexture = true;
+        }
+        else
+        {
+            glBufferData(GL_ARRAY_BUFFER, g_uvBufDataPng.size() * sizeof(GLfloat), &g_uvBufDataPng[0], GL_STATIC_DRAW);
+            m_textureId = LoadTexturePNGFile("resources/cube.png");
+            m_ownsTexture = true;
+        }
     }
 
     SubscribeEvent(EventType::Key)->bind(this, &GLCubeRenderable::HandleKeyEvent);
@@ -190,14 +259,16 @@ void GLCubeRenderable::CleanGLResources()
         glDeleteVertexArrays(1, &m_vertexArrayId);
     if (m_shaderId)
         glDeleteProgram(m_shaderId);
-    if (m_textureId)
+    if (m_textureId && m_ownsTexture)
+    {
         glDeleteTextures(1, &m_textureId);
+        m_textureId = 0;
+    }
 
     m_vertexBufferId = 0;
     m_uvBufferId = 0;
     m_vertexArrayId = 0;
     m_shaderId = 0;
-    m_textureId = 0;
 }
 
 void GLCubeRenderable::NewFrame(float deltaT)

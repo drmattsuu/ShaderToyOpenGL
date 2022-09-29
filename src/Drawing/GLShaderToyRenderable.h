@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 struct ShaderToyShader
 {
@@ -45,3 +46,5 @@ private:
     GLuint m_quadVertexArrayObject = 0;
     GLuint m_quadVertexBufferObject = 0;
 };
+
+using GLShaderToyRenderablePtr = std::shared_ptr<GLShaderToyRenderable>;

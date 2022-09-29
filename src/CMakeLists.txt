@@ -14,6 +14,7 @@ add_executable(GLShaderToy
     "Drawing/GLRenderWindow.cpp"
     "Drawing/GLShaderToyRenderable.cpp"
     "Drawing/GLSkyboxRenderable.cpp"
+    "Drawing/GLGalleryScene.cpp"
     "Drawing/ImguiImpl.cpp"
     "Util/FileUtils.cpp"
     "Util/lodepng.cpp"

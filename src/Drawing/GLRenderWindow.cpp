@@ -3,6 +3,7 @@
 #include "GLCubeRenderable.h"
 #include "GLCubesRenderable.h"
 #include "GLFrameBuffersRenderable.h"
+#include "GLGalleryScene.h"
 #include "GLInputManager.h"
 #include "GLMeshRenderable.h"
 #include "GLRenderable.h"
@@ -401,6 +402,8 @@ void GLRenderWindow::AddAllRenderables()
     AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "cyborg/cyborg")));
 
     AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "backpack/backpack")));
+
+    AddRenderable(GLRenderablePtr(new GLGalleryScene(GetCamera())));
 
     // AddRenderable(GLRenderablePtr(new GLMeshRenderable(GetCamera(), "radar")));
 }
