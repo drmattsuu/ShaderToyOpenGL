@@ -5,16 +5,16 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <boost/filesystem.hpp>
 #include <glm/glm.hpp>
 
 #include "imgui.h"
 
+#include <filesystem>
 #include <algorithm>
 #include <iostream>
 #include <string>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 namespace
 {

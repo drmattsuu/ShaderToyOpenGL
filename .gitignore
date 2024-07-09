@@ -32,7 +32,6 @@
 *.app
 
 # Repro Specific
-thirdparty/boost_1_70_0
 build
 .vs
 

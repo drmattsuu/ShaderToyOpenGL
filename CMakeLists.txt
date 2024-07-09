@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required (VERSION 3.28)
 project (GLShaderToy VERSION 0.0.1)
 
 find_package(OpenGL REQUIRED)
@@ -66,3 +66,5 @@ set(ALL_LIBS
 )
 
 add_subdirectory (src)
+
+set_property(TARGET GLShaderToy PROPERTY CXX_STANDARD 23)

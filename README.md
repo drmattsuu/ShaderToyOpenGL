@@ -3,8 +3,7 @@
 ## Basic Checkout and Build Process
 ### Requirements
 - CMake v3.15 or newer (https://cmake.org/download/)
-- A compiler that supports C++17
-- Boost 17.0 precompiled (static) and placed in `/thirdparty/boost_1_70_0/`
+- A compiler that supports C++23
 
 ### Third-party Libraries
 From the root of this repo run the following commands to fetch third-party dependencies;

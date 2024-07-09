@@ -1,16 +1,15 @@
 #include "Drawing/GLRenderWindow.h"
 
-#include <boost/filesystem.hpp>
-#include <iostream>
-#include <string>
+#include <filesystem>
+#include <print>
 
 int main()
 {
 #ifdef TOY_WORKING_DIR
-    boost::filesystem::current_path(TOY_WORKING_DIR);
+    std::filesystem::current_path(TOY_WORKING_DIR);
 #endif
-    std::cout << "Hello Shaders!" << std::endl;
-    std::cout << "Working Directory: " << boost::filesystem::current_path() << std::endl;
+    std::println("Hello Shaders!");
+    std::println( "Working Directory: {0}", std::filesystem::current_path().string());
 
     GLRenderWindow glRenderWindow;
 

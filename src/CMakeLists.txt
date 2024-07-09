@@ -24,8 +24,6 @@ add_executable(GLShaderToy
     "Util/FastDelegateBind.h")
 
 target_link_libraries(GLShaderToy
-    PUBLIC Boost::filesystem
-    PUBLIC Boost::boost
     PUBLIC ${ALL_LIBS}
 )
 

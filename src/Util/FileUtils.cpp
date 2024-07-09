@@ -1,13 +1,13 @@
 #include "FileUtils.h"
 
-#include <boost/filesystem.hpp>
-
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <vector>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 std::string LoadFileText(const std::string& filename)
 {
@@ -26,8 +26,8 @@ std::string LoadFileText(const std::string& filename)
         return std::string();
     }
 
-    std::string raw;
-    fs::load_string_file(file, raw);
+    std::ifstream ifs(file.string(), std::ios::in);
+    std::string raw(std::istreambuf_iterator<char>{ifs}, {});
     return raw;
 }
 

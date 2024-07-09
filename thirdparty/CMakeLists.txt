@@ -41,10 +41,6 @@ target_include_directories(glew
 
 add_subdirectory(glm)
 
-## Boost ##
-
-add_subdirectory(boost-cmake)
-
 ## ImGui ##
 
 add_library(imgui
